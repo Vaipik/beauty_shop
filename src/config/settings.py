@@ -21,8 +21,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third-party packages
     "rest_framework",
     "debug_toolbar",
+    "drf_spectacular",
     "treebeard",
     # APPS
     "api.v1.product",
@@ -100,3 +102,16 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Your Project API",
+    "DESCRIPTION": "Your project description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
+}
