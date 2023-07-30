@@ -22,6 +22,7 @@ black = "^23.7.0"
 ruff = "^0.0.280"
 isort = "^5.12.0"
 factory-boy = "^3.3.0"
+django-pytest = "^0.2.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -34,5 +35,5 @@ select = [
     "F",
     "D"
 ]
-exclude = ["settings.py", "admin.py", "migrations", "README.md"]
+exclude = ["settings.py", "admin.py", "apps.py", "migrations", "README.md"]
 ignore = ["D100", "D104", "D105", "D107", "F821"]

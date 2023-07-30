@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "treebeard",
     # APPS
-    "api.v1.goods",
+    "api.v1.product",
 ]
 
 MIDDLEWARE = [
