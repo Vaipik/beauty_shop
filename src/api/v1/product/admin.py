@@ -7,14 +7,11 @@ from .models import Product, ProductCategory, ProductCategoryOption, ProductManu
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
+    list_display = ("id", "name", "price", "rating", "sku")
     list_display_links = ("id", "name")
     filter_horizontal = ("categories",)
-    search_fields = (
-        "name",
-        "description",
-    )
-    list_filter = ("name",)
+    search_fields = ("name", "description", "price", "rating", "sku")
+    list_filter = ("name", "price", "sku")
 
 
 @admin.register(ProductCategory)
