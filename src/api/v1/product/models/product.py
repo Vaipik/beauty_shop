@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from .. import constants
@@ -23,13 +24,20 @@ class Product(Base, TimeStampedBase):
         verbose_name=_("Rating"),
         max_digits=3,  # 4.99 / 5
         decimal_places=2,
+        null=True,
+        blank=True,
     )
     price = models.DecimalField(
         verbose_name=_("Price"),
-        max_digits=3,  # 4.99 / 5
+        max_digits=constants.PRODUCT_PRICE_MAX_DIGITS,
         decimal_places=2,
+        null=True,
+        blank=True,
     )
-    sku = models.PositiveIntegerField(verbose_name=_("Stock keeping unit"))
+    sku = models.PositiveIntegerField(
+        verbose_name=_("Stock keeping unit"),
+        unique=True,
+    )
     status = models.CharField(
         verbose_name=_("Status"),
         max_length=1,
@@ -62,6 +70,13 @@ class Product(Base, TimeStampedBase):
         db_table = "products"
         verbose_name = _("Product")
         verbose_name_plural = _("Product")
+        constraints = [
+            models.CheckConstraint(
+                name="price_is_positive",
+                check=Q(price__gte=0) | Q(price__isnull=True),
+                violation_error_message=_("Price must be positive or empty."),
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.name}"
