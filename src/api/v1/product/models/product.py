@@ -51,6 +51,12 @@ class Product(Base, TimeStampedBase):
         related_name="product_categories",
         blank=True,
     )
+    options = models.ManyToManyField(
+        to="ProductCategoryOption",
+        related_name="product",
+        db_table="product_options_m2m",
+        blank=True,
+    )
 
     class Meta:  # noqa D106
         db_table = "products"

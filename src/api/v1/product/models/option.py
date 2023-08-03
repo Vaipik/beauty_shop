@@ -18,12 +18,6 @@ class ProductCategoryOption(Base, MP_Node):
         on_delete=models.DO_NOTHING,
         related_name="options",
     )
-    product = models.ManyToManyField(
-        to="Product",
-        related_name="product_options",
-        db_table="product_options_m2m",
-        blank=True,
-    )
     node_order_by = ["name"]
 
     class Meta:  # noqa D106
