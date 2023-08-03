@@ -10,16 +10,18 @@ class ProductOutputListSerializer(serializers.ModelSerializer):
     Primary usage is at the main page to obtain product list with only one image.
     """
 
-    image = serializers.SerializerMethodField()
+    img_url = serializers.SerializerMethodField()
 
     class Meta:  # noqa D106
         model = Product
-        fields = ["id", "name", "description", "status", "image"]
+        fields = ["id", "name", "description", "status", "img_url"]
         read_only_fields = ["id"]
 
-    def get_image(self, obj: Product) -> str | None:
+    def get_img_url(self, obj: Product) -> str | None:
         """Return image url with order equals to 1 or None if it does not exist."""
-        return obj.img_url if obj.img_url else None
+        request = self.context.get("request")
+        # print
+        return request.build_absolute_uri("11")
 
 
 class ProductOutputDetailSerializer(serializers.ModelSerializer):

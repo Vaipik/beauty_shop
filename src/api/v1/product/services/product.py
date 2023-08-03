@@ -7,8 +7,10 @@ from ..models import Product
 
 def get_list_products() -> QuerySet[Product]:
     """Return queryset with prefetched images and with extra field for img_url."""
-    return Product.objects.prefetch_related("images").annotate(
-        img_url=F("images__img_path")
+    return (
+        Product.objects.prefetch_related("images")
+        .annotate(img_path=F("images__img_path"))
+        .filter(images__img_order=1)
     )
 
 
