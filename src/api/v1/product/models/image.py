@@ -7,7 +7,7 @@ from .base import Base, TimeStampedBase
 class ProductImage(Base, TimeStampedBase):
     """Store data about product images."""
 
-    img_path = models.FileField(
+    img_path = models.ImageField(
         verbose_name=_("Image path"),
         upload_to="%Y/%m/%d",
         null=False,
@@ -27,4 +27,4 @@ class ProductImage(Base, TimeStampedBase):
         unique_together = ("img_order", "product")
 
     def __str__(self) -> str:
-        return f"{self.product.name} №{self.img_order}"
+        return f"{self.product} №{self.img_order}"

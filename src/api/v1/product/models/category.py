@@ -21,9 +21,15 @@ class ProductCategory(Base, MP_Node):
         verbose_name_plural = _("Product categories")
 
     def __str__(self) -> str:
-        return self.category
+        return self.category_path
 
     @property
-    def category(self):
+    def category_path(self):
         """To get all category with subcategories. Like cat1 / cat11 / cat 111."""
-        return " / ".join([c.name for c in self.get_ancestors()])
+        ancestors = self.get_ancestors()
+        if ancestors:
+            return (
+                " / ".join([c.name for c in self.get_ancestors()]) + f" / {self.name}"
+            )
+
+        return self.name

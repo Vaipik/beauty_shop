@@ -18,18 +18,12 @@ class ProductCategoryOption(Base, MP_Node):
         on_delete=models.DO_NOTHING,
         related_name="options",
     )
-    product = models.ManyToManyField(
-        to="Product",
-        related_name="product_options",
-        db_table="product_options_m2m",
-        blank=True,
-    )
     node_order_by = ["name"]
 
     class Meta:  # noqa D106
         db_table = "product_category_options"
-        verbose_name = _("Product category")
-        verbose_name_plural = _("Product categories")
+        verbose_name = _("Product category option")
+        verbose_name_plural = _("Product category options")
 
     def __str__(self) -> str:
         return self.option
