@@ -27,3 +27,8 @@ def get_detail_product(pk: UUID) -> QuerySet[Product]:
         .select_related("manufacturer")
         .filter(pk=pk)
     )
+
+
+def get_product_image_url(product: Product) -> str:
+    """Accept object instance with filtered queryset via img_order equals to 1."""
+    return product.images.first().img_path.url

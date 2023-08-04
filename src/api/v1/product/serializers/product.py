@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from ..models import Product
 from ..serializers.image import ProductImageSerializer
+from .. import services
 
 
 class ProductOutputListSerializer(serializers.ModelSerializer):
@@ -20,8 +21,8 @@ class ProductOutputListSerializer(serializers.ModelSerializer):
     def get_img_url(self, obj: Product) -> str | None:
         """Return image url with order equals to 1 or None if it does not exist."""
         request = self.context.get("request")
-        # print
-        return request.build_absolute_uri("11")
+        img_url = services.get_product_image_url(obj)
+        return request.build_absolute_uri(img_url)
 
 
 class ProductOutputDetailSerializer(serializers.ModelSerializer):
