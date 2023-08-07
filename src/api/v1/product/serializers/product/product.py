@@ -36,15 +36,7 @@ class ProductOutputDetailSerializer(serializers.ModelSerializer):
 
     class Meta:  # noqa D106
         model = Product
-        fields = [
-            "name",
-            "description",
-            "price",
-            "rating",
-            "options",
-            "images",
-            "manufacturer",
-        ]
+        exclude = ["id", "categories"]
 
     @extend_schema_field(ProductOptionListSerializer)
     def get_options(self, instance: Product):
