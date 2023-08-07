@@ -15,6 +15,13 @@ class ProductCategory(Base, MP_Node):
     )
     node_order_by = ["name"]
 
+    options = models.ManyToManyField(
+        to="ProductOption",
+        related_name="categories",
+        db_table="category_options_m2m",
+        blank=True,
+    )
+
     class Meta:  # noqa D106
         db_table = "product_categories"
         verbose_name = _("Product category")

@@ -1,9 +1,15 @@
+import json
+
 from rest_framework import serializers
 
-from ..models import ProductCategoryOption
 
+class ProductOptionsListSerializer(serializers.Serializer):
+    """Serializer that represent options that are connected to products."""
 
-class ProductCategoryOptionSerializer(serializers.ModelSerializer):  # noqa D101
-    class Meta:  # noqa D106
-        model = ProductCategoryOption
-        fields = "__all__"
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    options = serializers.SerializerMethodField()
+
+    def get_options(self, instance):
+        """To convert from RawQuerySet. See services.option for details."""
+        return json.loads(instance.options)

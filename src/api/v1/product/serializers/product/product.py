@@ -1,11 +1,10 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from ..models import Product
-from ..serializers.image import ProductImageSerializer
-from ..serializers.option import (
-    ProductOptionsListSerializer,
-)
-from .. import services
+from api.v1.product.models import Product
+from api.v1.product.serializers.image import ProductImageSerializer
+from api.v1.product import services
+from .additional_serializer import ProductOptionListSerializer
 
 
 class ProductOutputListSerializer(serializers.ModelSerializer):
@@ -15,11 +14,10 @@ class ProductOutputListSerializer(serializers.ModelSerializer):
     """
 
     img_url = serializers.SerializerMethodField()
-    options = ProductOptionsListSerializer(many=True, read_only=True)
 
     class Meta:  # noqa D106
         model = Product
-        fields = ["id", "name", "description", "status", "img_url", "options"]
+        fields = ["id", "name", "description", "status", "img_url"]
         read_only_fields = ["id"]
 
     def get_img_url(self, obj: Product) -> str | None:
@@ -48,6 +46,7 @@ class ProductOutputDetailSerializer(serializers.ModelSerializer):
             "manufacturer",
         ]
 
+    @extend_schema_field(ProductOptionListSerializer)
     def get_options(self, instance: Product):
         """Return product options in nested format {parent: [child]}."""
         options = services.get_product_options(instance.pk)
