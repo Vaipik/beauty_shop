@@ -1,13 +1,13 @@
 from rest_framework import viewsets
 
-from ..serializers import ProductCategoryListSerializer
+from ..serializers import ProductCategoryOutputListSerializer
 from .. import services
 
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     """Viewset for categories that are binded for products."""
 
-    serializer_class = ProductCategoryListSerializer
+    serializer_class = ProductCategoryOutputListSerializer
     http_method_names = ["get", "post", "patch", "delete"]
 
     def get_queryset(self):

@@ -1,11 +1,11 @@
-from .category import ProductCategoryListSerializer
+from .category import ProductCategoryOutputListSerializer
 from .product import ProductOutputDetailSerializer, ProductOutputListSerializer
 from .image import ProductImageSerializer
 from .option import ProductOptionsListSerializer
 
 __all__ = [
     "ProductImageSerializer",
-    "ProductCategoryListSerializer",
+    "ProductCategoryOutputListSerializer",
     "ProductOutputDetailSerializer",
     "ProductOutputListSerializer",
     "ProductOptionsListSerializer",
