@@ -1,11 +1,17 @@
 from rest_framework import viewsets
 
-from ..serializers import ProductCategoryOptionSerializer
+from ..serializers import ProductOptionsListSerializer
+from .. import services
 
 
-class ProductCategoryOptionViewSet(viewsets.ModelViewSet):
-    """All options for category."""
+class ProductOptionViewSet(viewsets.ModelViewSet):
+    """Viewset for options that are binded for products."""
 
-    serializer_class = ProductCategoryOptionSerializer
-
+    serializer_class = ProductOptionsListSerializer
     http_method_names = ["get", "post", "patch", "delete"]
+
+    def get_queryset(self):
+        """Choose which queryset should be queried."""
+        if self.action == "list":
+            return services.get_options_binded_to_products()
+        return super().get_queryset()

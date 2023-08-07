@@ -5,7 +5,7 @@ from treebeard.forms import movenodeform_factory
 from .models import (
     Product,
     ProductCategory,
-    ProductCategoryOption,
+    ProductOption,
     ProductManufacturer,
     ProductImage,
 )
@@ -25,9 +25,9 @@ class ProductCategoryAdmin(TreeAdmin):
     form = movenodeform_factory(ProductCategory)
 
 
-@admin.register(ProductCategoryOption)
-class ProductCategoryOptionAdmin(TreeAdmin):
-    form = movenodeform_factory(ProductCategoryOption)
+@admin.register(ProductOption)
+class ProductOptionAdmin(TreeAdmin):
+    form = movenodeform_factory(ProductOption)
 
 
 @admin.register(ProductManufacturer)

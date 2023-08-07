@@ -37,17 +37,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         # your non-standard behaviour
         return super().list(request)
 
-    # def create(self, request, *args, **kwargs):
-    #     pass
     @extend_schema(
         description="ddada",
         responses=ProductOutputDetailSerializer,
     )
     def retrieve(self, request, pk=None):  # noqa D102
         return super().retrieve(request, pk)
-
-    def partial_update(self, request, pk=None):  # noqa D102
-        pass
-
-    def destroy(self, request, pk=None):  # noqa D102
-        pass

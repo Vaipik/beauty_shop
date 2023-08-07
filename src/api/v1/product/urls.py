@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
-from .views import ProductViewSet, ProductCategoryOptionViewSet, ProductCategoryViewSet
+from .views import ProductViewSet, ProductOptionViewSet, ProductCategoryViewSet
 
 product_router = SimpleRouter()
 product_router.register(prefix="products", viewset=ProductViewSet, basename="products")
@@ -13,7 +13,7 @@ category_router.register(
 
 option_router = SimpleRouter()
 option_router.register(
-    prefix="options", viewset=ProductCategoryOptionViewSet, basename="options"
+    prefix="options", viewset=ProductOptionViewSet, basename="options"
 )
 
 app_name = "product"
