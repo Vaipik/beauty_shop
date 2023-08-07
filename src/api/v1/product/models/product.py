@@ -60,7 +60,7 @@ class Product(Base, TimeStampedBase):
         blank=True,
     )
     options = models.ManyToManyField(
-        to="ProductCategoryOption",
+        to="ProductOption",
         related_name="product",
         db_table="product_options_m2m",
         blank=True,

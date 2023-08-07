@@ -2,6 +2,9 @@ from rest_framework import serializers
 
 from ..models import Product
 from ..serializers.image import ProductImageSerializer
+from ..serializers.option import (
+    ProductOptionsListSerializer,
+)
 from .. import services
 
 
@@ -12,10 +15,11 @@ class ProductOutputListSerializer(serializers.ModelSerializer):
     """
 
     img_url = serializers.SerializerMethodField()
+    options = ProductOptionsListSerializer(many=True, read_only=True)
 
     class Meta:  # noqa D106
         model = Product
-        fields = ["id", "name", "description", "status", "img_url"]
+        fields = ["id", "name", "description", "status", "img_url", "options"]
         read_only_fields = ["id"]
 
     def get_img_url(self, obj: Product) -> str | None:
@@ -30,6 +34,7 @@ class ProductOutputDetailSerializer(serializers.ModelSerializer):
 
     images = ProductImageSerializer(many=True, read_only=True)
     manufacturer = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    options = serializers.SerializerMethodField()
 
     class Meta:  # noqa D106
         model = Product
@@ -42,3 +47,8 @@ class ProductOutputDetailSerializer(serializers.ModelSerializer):
             "images",
             "manufacturer",
         ]
+
+    def get_options(self, instance: Product):
+        """Return product options in nested format {parent: [child]}."""
+        options = services.get_product_options(instance.pk)
+        return [{"name": option.name, "options": option.options} for option in options]
