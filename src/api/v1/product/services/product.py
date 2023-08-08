@@ -58,3 +58,8 @@ def get_product_options(product_id: UUID) -> RawQuerySet:
 
     raw_queryset = ProductOption.objects.raw(query, (product_id,))
     return raw_queryset
+
+
+def get_products_for_category(category_id: UUID) -> QuerySet[Product]:
+    """Return all products for a category."""
+    return Product.objects.filter(categories__id=category_id)
