@@ -17,8 +17,7 @@ class ProductOutputListSerializer(serializers.ModelSerializer):
 
     class Meta:  # noqa D106
         model = Product
-        fields = ["id", "name", "description", "status", "img_url"]
-        read_only_fields = ["id"]
+        fields = ["id", "name", "manufacturer", "price", "rating", "sku", "img_url"]
 
     def get_img_url(self, obj: Product) -> str | None:
         """Return image url with order equals to 1 or None if it does not exist."""

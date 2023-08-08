@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "treebeard",
     "corsheaders",
+    "django_filters",
     # APPS
     "api.v1.product",
 ]
@@ -124,6 +125,7 @@ STORAGES = {
 # DRF
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
 
 # django-cors-headers
