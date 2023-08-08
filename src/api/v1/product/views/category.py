@@ -39,8 +39,8 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         return Response(serialzer.data, status=200)
 
     @extend_schema(
-        responses=ProductOutputListSerializer(many=True),
-        description="List of product options that are ",
+        responses=ProductOptionsListSerializer(many=True),
+        description="List of product options that are presented in category.",
     )
     @action(detail=True, methods=["get"], serializer_class=ProductOptionsListSerializer)
     def options(self, request, pk=None):
