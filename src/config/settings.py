@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "treebeard",
     "corsheaders",
+    "django_filters",
     # APPS
     "api.v1.product",
 ]
