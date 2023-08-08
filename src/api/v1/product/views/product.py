@@ -1,6 +1,7 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 
+from ..filters import ProductFilter
 from ..serializers import ProductOutputDetailSerializer, ProductOutputListSerializer
 from .. import services
 
@@ -10,6 +11,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     serializer_class = ProductOutputDetailSerializer
     http_method_names = ["get", "post", "patch", "delete"]
+    filterset_class = ProductFilter
 
     def get_serializer_class(self):
         """Different endpoints require different serializers."""
@@ -31,7 +33,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     @extend_schema(
         # override default docstring extraction
         description="Return a list of products."
-        "Note that products have only one image - main image.",
+        "Note that products have only one image - main image. This endpoint can be used"
+        "for main page of website. Also endpoint has filters which are designed "
+        "as query parameters and they are optional.",
     )
     def list(self, request):  # noqa D102
         # your non-standard behaviour
