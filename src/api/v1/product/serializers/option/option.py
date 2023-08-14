@@ -5,6 +5,7 @@ from drf_spectacular.utils import extend_schema_field
 
 from .additional_serializers import ProductOptionSerializer
 from ... import services
+from ...models import ProductOption
 
 
 class ProductOptionsListSerializer(serializers.Serializer):
@@ -20,7 +21,7 @@ class ProductOptionsListSerializer(serializers.Serializer):
         return json.loads(instance.options)
 
 
-class ProductOptionInputSeriliazer(serializers.Serializer):
+class ProductOptionInputSeriliazer(serializers.ModelSerializer):
     """Serializer for input data to add a new option."""
 
     name = serializers.CharField()
@@ -33,3 +34,7 @@ class ProductOptionInputSeriliazer(serializers.Serializer):
             return services.create_child_option(validated_data["name"], parent_id)
         else:
             return services.create_root_option(validated_data["name"])
+
+    class Meta:  # noqa D106
+        model = ProductOption
+        fields = ["name", "parent_id"]
