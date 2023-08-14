@@ -1,5 +1,10 @@
 from .category import get_categories_binded_to_products
-from .option import get_options_binded_to_products, get_product_options_in_category
+from .option import (
+    get_options_binded_to_products,
+    get_product_options_in_category,
+    create_child_option,
+    create_root_option,
+)
 
 from .product import (
     get_list_products,
@@ -10,6 +15,8 @@ from .product import (
 )
 
 __all__ = [
+    "create_root_option",
+    "create_child_option",
     "get_list_products",
     "get_detail_product",
     "get_product_image_url",

@@ -4,6 +4,7 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 
 from .additional_serializers import ProductOptionSerializer
+from ... import services
 
 
 class ProductOptionsListSerializer(serializers.Serializer):
@@ -17,3 +18,18 @@ class ProductOptionsListSerializer(serializers.Serializer):
     def get_options(self, instance):
         """To convert from RawQuerySet. See services.option for details."""
         return json.loads(instance.options)
+
+
+class ProductOptionInputSeriliazer(serializers.Serializer):
+    """Serializer for input data to add a new option."""
+
+    name = serializers.CharField()
+    parent_id = serializers.UUIDField(allow_null=True)
+
+    def create(self, validated_data):
+        """Create and return a new option with optional parameter parent_id."""
+        parent_id = validated_data.pop("parent_id")
+        if parent_id:
+            return services.create_child_option(validated_data["name"], parent_id)
+        else:
+            return services.create_root_option(validated_data["name"])

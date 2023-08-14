@@ -41,3 +41,16 @@ def get_product_options_in_category(category_id: UUID):
         """
     raw_queryset = ProductOption.objects.raw(query, (category_id,))
     return raw_queryset
+
+
+def create_root_option(name: str):
+    """Create a root of options tree."""
+    root_option = ProductOption.add_root(name=name)
+    return root_option
+
+
+def create_child_option(name: str, parent_id: UUID):
+    """Add a new child to existing parent node."""
+    parent_option = ProductOption.objects.get(pk=parent_id)
+    parent_option.add_child(name=name)
+    return parent_option
