@@ -1,4 +1,4 @@
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
@@ -37,6 +37,26 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         "and provide a name for suboption.",
         request=ProductOptionCreateRequestSeriliazer,
         responses=ProductOptionCreateResponseSeriliazer,
+        examples=[
+            OpenApiExample(
+                "Root node",
+                summary="Root node",
+                description="Leave parent_id as null to create a root node.",
+                value={
+                    "name": "option name",
+                    "parent_id": None,
+                },
+            ),
+            OpenApiExample(
+                "Child node",
+                summary="Child node",
+                description="Provide id of parent node to create a child node.",
+                value={
+                    "name": "option name",
+                    "parent_id": "58b45f63-634a-4c5b-8594-c5729e9aa655",
+                },
+            ),
+        ],
     )
     def create(self, request, *args, **kwargs):  # noqa D102
         serializer = self.get_serializer(data=request.data)
