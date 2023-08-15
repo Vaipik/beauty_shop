@@ -3,10 +3,10 @@ import json
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .additional_serializers import ProductCategorySerializer
+from .common import ProductCategorySerializer
 
 
-class ProductCategoryOutputListSerializer(serializers.Serializer):
+class ProductCategoryListResponseSerializer(serializers.Serializer):
     """Serializer that represent options that are connected to products."""
 
     id = serializers.UUIDField()

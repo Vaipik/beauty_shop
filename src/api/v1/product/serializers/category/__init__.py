@@ -1,4 +1,6 @@
-from .category import ProductCategoryOutputListSerializer
+from .response import ProductCategoryListResponseSerializer
 
-
-__all__ = ["ProductCategoryOutputListSerializer"]
+__all__ = [
+    # Response,
+    "ProductCategoryListResponseSerializer"
+]
