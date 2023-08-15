@@ -2,12 +2,12 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from api.v1.product.models import Product
-from api.v1.product.serializers.image import ProductImageSerializer
+from api.v1.product.serializers.image import ProductImageListResponseSerializer
 from api.v1.product import services
-from .additional_serializer import ProductOptionListSerializer
+from .common import ProductOptionListSerializer
 
 
-class ProductOutputListSerializer(serializers.ModelSerializer):
+class ProductListResponseSerializer(serializers.ModelSerializer):
     """Specified for list display view.
 
     Primary usage is at the main page to obtain product list with only one image.
@@ -26,10 +26,10 @@ class ProductOutputListSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(img_url)
 
 
-class ProductOutputDetailSerializer(serializers.ModelSerializer):
+class ProductDetailResponseSerializer(serializers.ModelSerializer):
     """Detailed view of product with full list of images and options."""
 
-    images = ProductImageSerializer(many=True, read_only=True)
+    images = ProductImageListResponseSerializer(many=True, read_only=True)
     manufacturer = serializers.SlugRelatedField(slug_field="name", read_only=True)
     options = serializers.SerializerMethodField()
 
