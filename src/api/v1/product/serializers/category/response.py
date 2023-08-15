@@ -3,7 +3,7 @@ import json
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from api.v1.product.models import ProductCategory
+from core.product.models import ProductCategory
 from .common import ProductCategorySerializer
 
 

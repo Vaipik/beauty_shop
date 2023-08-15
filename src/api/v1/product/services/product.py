@@ -3,7 +3,7 @@ from uuid import UUID
 from django.db.models import F, QuerySet
 from django.db.models.query import RawQuerySet
 
-from ..models import Product, ProductOption
+from core.product.models import Product, ProductOption
 
 
 def get_list_products() -> QuerySet[Product]:

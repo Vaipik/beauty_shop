@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from .. import constants
+from core.product import constants
 from .base import Base, TimeStampedBase
 
 
