@@ -1,12 +1,21 @@
 import json
 
-from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
+from rest_framework import serializers
 
-from .additional_serializers import ProductOptionSerializer
+from core.product.models import ProductOption
+from .common import ProductOptionSerializer
 
 
-class ProductOptionsListSerializer(serializers.Serializer):
+class ProductOptionCreateResponseSeriliazer(serializers.ModelSerializer):
+    """Serializer for created option."""
+
+    class Meta:  # noqa D106
+        model = ProductOption
+        fields = ["id", "name"]
+
+
+class ProductOptionListResponseSerializer(serializers.Serializer):
     """Serializer that represent options that are connected to products."""
 
     id = serializers.UUIDField()
