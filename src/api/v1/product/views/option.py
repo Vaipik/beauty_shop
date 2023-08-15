@@ -14,7 +14,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
     """Viewset for options that are binded for products."""
 
     serializer_class = ProductOptionListResponseSerializer
-    http_method_names = ["get", "post", "patch", "delete"]
+    http_method_names = ["get", "post"]
 
     def get_queryset(self):
         """Choose which queryset should be queried."""
@@ -30,7 +30,11 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     @extend_schema(
-        description="",
+        description="This endpoint is used to create an option and suboptions for"
+        "products. If you want to create a root of your options tree you"
+        "don't need to pass a parent_id, leave it NULL. If you want to"
+        "create a suboption than you need to provide a parentId of option"
+        "and provide a name for suboption.",
         request=ProductOptionCreateRequestSeriliazer,
         responses=ProductOptionCreateResponseSeriliazer,
     )

@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from ..models import ProductCategory
 
 
@@ -18,3 +20,16 @@ def get_categories_binded_to_products():
 
     raw_queryset = ProductCategory.objects.raw(query)
     return raw_queryset
+
+
+def create_root_category(name: str) -> ProductCategory:
+    """Create a root of categories tree."""
+    root_category = ProductCategory.add_root(name=name)
+    return root_category
+
+
+def create_child_category(name: str, parent_id: UUID) -> ProductCategory:
+    """Add a new child category to existing parent category node."""
+    parent_category = ProductCategory.objects.get(pk=parent_id)
+    child_category = parent_category.add_child(name=name)
+    return child_category

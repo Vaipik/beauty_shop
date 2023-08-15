@@ -2,23 +2,23 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 
 from ..filters import ProductFilter
-from ..serializers import ProductOutputDetailSerializer, ProductOutputListSerializer
+from ..serializers import ProductDetailResponseSerializer, ProductListResponseSerializer
 from .. import services
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     """Represent product routes. PUT method is excluded because of NULL."""
 
-    serializer_class = ProductOutputDetailSerializer
-    http_method_names = ["get", "post", "patch", "delete"]
+    serializer_class = ProductDetailResponseSerializer
+    http_method_names = ["get"]
     filterset_class = ProductFilter
 
     def get_serializer_class(self):
         """Different endpoints require different serializers."""
         if self.action == "list":
-            return ProductOutputListSerializer
+            return ProductListResponseSerializer
         if self.action == "retrieve":
-            return ProductOutputDetailSerializer
+            return ProductDetailResponseSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):
@@ -43,7 +43,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         description="ddada",
-        responses=ProductOutputDetailSerializer,
+        responses=ProductDetailResponseSerializer,
     )
     def retrieve(self, request, pk=None):  # noqa D102
         return super().retrieve(request, pk)

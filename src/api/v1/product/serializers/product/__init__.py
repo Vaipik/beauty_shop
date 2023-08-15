@@ -1,3 +1,7 @@
-from .product import ProductOutputListSerializer, ProductOutputDetailSerializer
+from .response import ProductListResponseSerializer, ProductDetailResponseSerializer
 
-__all__ = ["ProductOutputListSerializer", "ProductOutputDetailSerializer"]
+__all__ = [
+    # Response
+    "ProductListResponseSerializer",
+    "ProductDetailResponseSerializer",
+]
