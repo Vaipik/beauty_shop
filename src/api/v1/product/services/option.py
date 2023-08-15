@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ..models import ProductOption
+from core.product.models import ProductOption
 
 
 def get_options_binded_to_products():

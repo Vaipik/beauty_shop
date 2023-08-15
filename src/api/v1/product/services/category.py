@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ..models import ProductCategory
+from core.product.models import ProductCategory
 
 
 def get_categories_binded_to_products():

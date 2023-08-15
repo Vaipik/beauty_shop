@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.v1.product.models import ProductImage
+from core.product.models import ProductImage
 
 
 class ProductImageListResponseSerializer(serializers.ModelSerializer):  # noqa D101

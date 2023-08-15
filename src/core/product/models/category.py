@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from treebeard.mp_tree import MP_Node
 
-from .. import constants
+from core.product import constants
 from .base import Base
 
 

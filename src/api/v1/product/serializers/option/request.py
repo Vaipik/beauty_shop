@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.v1.product.models import ProductOption
+from core.product.models import ProductOption
 
 
 class ProductOptionCreateRequestSeriliazer(serializers.ModelSerializer):
