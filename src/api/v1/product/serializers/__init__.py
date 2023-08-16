@@ -4,7 +4,7 @@ from .category import (
     ProductCategoryCreateResponseSeriliazer,
 )
 from .product import ProductDetailResponseSerializer, ProductListResponseSerializer
-from .image import ProductImageListResponseSerializer
+from .image import ProductImageListResponseSerializer, ProductImageRequestSerializer
 from .option import (
     ProductOptionCreateRequestSeriliazer,
     ProductOptionCreateResponseSeriliazer,
@@ -15,6 +15,7 @@ __all__ = [
     # Request
     "ProductCategoryCreateRequestSeriliazer",
     "ProductOptionCreateRequestSeriliazer",
+    "ProductImageRequestSerializer",
     # Response
     "ProductCategoryCreateResponseSeriliazer",
     "ProductOptionCreateResponseSeriliazer",

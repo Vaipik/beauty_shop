@@ -38,7 +38,7 @@ class ProductDetailResponseSerializer(serializers.ModelSerializer):
         model = Product
         exclude = ["id", "categories"]
 
-    @extend_schema_field(ProductOptionListSerializer)
+    @extend_schema_field(ProductOptionListSerializer(many=True))
     def get_options(self, instance: Product):
         """Return product options in nested format {parent: [child]}."""
         options = services.get_product_options(instance.pk)
