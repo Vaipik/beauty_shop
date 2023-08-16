@@ -1,8 +1,10 @@
-from drf_spectacular.utils import extend_schema, OpenApiExample
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from core.product.models import ProductCategory
+from api.v1.product import swagger_examples
 from ..serializers import (
     ProductCategoryCreateRequestSeriliazer,
     ProductCategoryCreateResponseSeriliazer,
@@ -22,7 +24,10 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Choose which queryset should be queried."""
         if self.action == "list":
-            return services.get_categories_binded_to_products()
+            return ProductCategory.get_root_nodes()
+        if self.action == "retrieve":
+            node = ProductCategory.objects.get(pk=self.kwargs["pk"])
+            return ProductCategory.get_tree(node)
         if self.action == "products":
             return services.get_products_for_category(self.kwargs["pk"])
         if self.action == "options":
@@ -30,8 +35,6 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         return super().get_queryset()
 
     def get_serializer_class(self):  # noqa D102
-        if self.action == "list":
-            return ProductCategoryListResponseSerializer
         if self.action == "create":
             return ProductCategoryCreateRequestSeriliazer
         return super().get_serializer_class()
@@ -44,26 +47,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         "and provide a name for subcategory.",
         request=ProductCategoryCreateRequestSeriliazer,
         responses=ProductCategoryCreateResponseSeriliazer,
-        examples=[
-            OpenApiExample(
-                "Root node",
-                summary="Root node",
-                description="Leave parent_id as null to create a root node.",
-                value={
-                    "name": "category name",
-                    "parent_id": None,
-                },
-            ),
-            OpenApiExample(
-                "Child node",
-                summary="Child node",
-                description="Provide id of parent node to create a child node.",
-                value={
-                    "name": "category name",
-                    "parent_id": "58b45f63-634a-4c5b-8594-c5729e9aa655",
-                },
-            ),
-        ],
+        examples=swagger_examples.get_created_tree_examples(),
     )
     def create(self, request, *args, **kwargs):  # noqa D102
         serializer = self.get_serializer(data=request.data)
@@ -83,6 +67,22 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
 
         response = ProductCategoryCreateResponseSeriliazer(category)
         return Response(data=response.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        description="Provide all categories that are presented."
+        "Note that depth are not limited.",
+        examples=swagger_examples.get_nested_examples(),
+    )
+    def list(self, request, *args, **kwargs):  # noqa D102
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Provide all categories that are presented in given category."
+        "Note that depth are not limited.",
+        examples=swagger_examples.get_nested_examples(),
+    )
+    def retrieve(self, request, *args, **kwargs):  # noqa D102
+        return super().retrieve(request, *args, **kwargs)
 
     @extend_schema(
         responses=ProductListResponseSerializer(many=True),
