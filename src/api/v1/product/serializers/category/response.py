@@ -1,10 +1,7 @@
-import json
-
-from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from core.product.models import ProductCategory
-from .common import ProductCategorySerializer
+from api.v1.product.serializers.common import TreeListResponseSerializer
 
 
 class ProductCategoryCreateResponseSeriliazer(serializers.ModelSerializer):
@@ -15,14 +12,7 @@ class ProductCategoryCreateResponseSeriliazer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
-class ProductCategoryListResponseSerializer(serializers.Serializer):
-    """Serializer that represent categories that are binded to products."""
+class ProductCategoryListResponseSerializer(TreeListResponseSerializer):
+    """Serializer that represent existing categories with their subcategories."""
 
-    id = serializers.UUIDField()
-    name = serializers.CharField()
-    categories = serializers.SerializerMethodField()
-
-    @extend_schema_field(ProductCategorySerializer(many=True))
-    def get_categories(self, instance):
-        """To convert from RawQuerySet. See services.category for details."""
-        return json.loads(instance.categories)
+    pass
