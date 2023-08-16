@@ -36,7 +36,9 @@ def get_detail_product(pk: UUID) -> QuerySet[Product]:
 
 def get_product_image_url(product: Product) -> str:
     """Accept object instance with filtered queryset via img_order equals to 1."""
-    return product.images.first().img_path.url
+    image = product.images.first()
+    if image:
+        return image.img_path.url
 
 
 def get_product_options(product_id: UUID) -> RawQuerySet:

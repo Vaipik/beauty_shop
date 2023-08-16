@@ -2,6 +2,8 @@ from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
+from core.product.models import ProductOption
+from api.v1.product import swagger_examples
 from ..serializers import (
     ProductOptionListResponseSerializer,
     ProductOptionCreateRequestSeriliazer,
@@ -19,7 +21,10 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Choose which queryset should be queried."""
         if self.action == "list":
-            return services.get_options_binded_to_products()
+            return ProductOption.get_root_nodes()
+        if self.action == "retrieve":
+            node = ProductOption.objects.get(pk=self.kwargs["pk"])
+            return ProductOption.get_tree(node)
         return super().get_queryset()
 
     def get_serializer_class(self):  # noqa D102
@@ -74,3 +79,19 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
 
         response = ProductOptionCreateResponseSeriliazer(option)
         return Response(data=response.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        description="Provide all categories that are presented."
+        "Note that depth are not limited.",
+        examples=swagger_examples.get_nested_examples(),
+    )
+    def list(self, request, *args, **kwargs):  # noqa D102
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Provide all categories that are presented in given category."
+        "Note that depth are not limited.",
+        examples=swagger_examples.get_nested_examples(),
+    )
+    def retrieve(self, request, *args, **kwargs):  # noqa D102
+        return super().retrieve(request, *args, **kwargs)

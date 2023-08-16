@@ -23,7 +23,8 @@ class ProductListResponseSerializer(serializers.ModelSerializer):
         """Return image url with order equals to 1 or None if it does not exist."""
         request = self.context.get("request")
         img_url = services.get_product_image_url(obj)
-        return request.build_absolute_uri(img_url)
+        if img_url:
+            return request.build_absolute_uri(img_url)
 
 
 class ProductDetailResponseSerializer(serializers.ModelSerializer):

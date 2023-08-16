@@ -19,6 +19,7 @@ def get_categories_binded_to_products():
     """
 
     raw_queryset = ProductCategory.objects.raw(query)
+
     return raw_queryset
 
 
