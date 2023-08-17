@@ -1,9 +1,9 @@
-from .request import ProductImageRequestSerializer
+from .request import ProductImageCreateRequestSerializer
 from .response import ProductImageListResponseSerializer
 
 __all__ = [
     # Request
-    "ProductImageRequestSerializer",
+    "ProductImageCreateRequestSerializer",
     # Response
     "ProductImageListResponseSerializer",
 ]

@@ -1,9 +1,9 @@
 from uuid import UUID
 
-from django.db.models import F, QuerySet
-from django.db.models.query import RawQuerySet
+from django.db.models import QuerySet
+from django.db.models.query import RawQuerySet, Prefetch
 
-from core.product.models import Product, ProductOption
+from core.product.models import Product, ProductOption, ProductImage
 
 
 def get_list_products() -> QuerySet[Product]:
@@ -12,11 +12,9 @@ def get_list_products() -> QuerySet[Product]:
     Note that if product have no images attached to it such product will not be listed
     in queryset
     """
-    return (
-        Product.objects.prefetch_related("images", "options")
-        .filter(images__img_order=1)
-        .annotate(img_path=F("images__img_path"))
-    )
+    return Product.objects.prefetch_related(
+        Prefetch("images", queryset=ProductImage.objects.filter(img_order=1))
+    ).select_related("manufacturer")
 
 
 def get_detail_product(pk: UUID) -> QuerySet[Product]:
@@ -36,9 +34,9 @@ def get_detail_product(pk: UUID) -> QuerySet[Product]:
 
 def get_product_image_url(product: Product) -> str:
     """Accept object instance with filtered queryset via img_order equals to 1."""
-    image = product.images.first()
+    image = product.images.all()
     if image:
-        return image.img_path.url
+        return image[0].img_path.url
 
 
 def get_product_options(product_id: UUID) -> RawQuerySet:
