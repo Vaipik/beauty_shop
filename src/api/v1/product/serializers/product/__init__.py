@@ -1,5 +1,9 @@
 from .request import ProductCreateRequestSerializer
-from .response import ProductListResponseSerializer, ProductDetailResponseSerializer
+from .response import (
+    ProductListResponseSerializer,
+    ProductDetailResponseSerializer,
+    ProductFullResponseSerializer,
+)
 
 __all__ = [
     # Request
@@ -7,4 +11,5 @@ __all__ = [
     # Response
     "ProductListResponseSerializer",
     "ProductDetailResponseSerializer",
+    "ProductFullResponseSerializer",
 ]

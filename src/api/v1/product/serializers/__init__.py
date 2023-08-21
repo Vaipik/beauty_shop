@@ -20,6 +20,7 @@ from .product import (
     ProductDetailResponseSerializer,
     ProductListResponseSerializer,
     ProductCreateRequestSerializer,
+    ProductFullResponseSerializer,
 )
 
 __all__ = [
@@ -38,4 +39,5 @@ __all__ = [
     "ProductImageListResponseSerializer",
     "ProductCategoryListResponseSerializer",
     "ProductOptionListResponseSerializer",
+    "ProductFullResponseSerializer",
 ]

@@ -6,6 +6,7 @@ from ..serializers import (
     ProductDetailResponseSerializer,
     ProductListResponseSerializer,
     ProductCreateRequestSerializer,
+    ProductFullResponseSerializer,
 )
 from .. import services
 
@@ -47,7 +48,14 @@ class ProductViewSet(viewsets.ModelViewSet):
         return super().list(request)
 
     @extend_schema(
-        description="ddada",
+        request=ProductCreateRequestSerializer,
+        responses=ProductFullResponseSerializer,
+    )
+    def create(self, request, *args, **kwargs):  # noqa D102
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Endpoint that returns a detail information about product for user",
         responses=ProductDetailResponseSerializer,
     )
     def retrieve(self, request, pk=None):  # noqa D102

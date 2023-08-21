@@ -48,3 +48,13 @@ class ProductDetailResponseSerializer(serializers.ModelSerializer):
         """Return product options in nested format {parent: [child]}."""
         options = services.get_product_options(instance.pk)
         return [{"name": option.name, "options": option.options} for option in options]
+
+
+class ProductFullResponseSerializer(serializers.ModelSerializer):
+    """Serializer using in admin panel to obtain full information about product."""
+
+    images = ProductImageListResponseSerializer(many=True)
+
+    class Meta:
+        model = Product
+        fields = "__all__"
