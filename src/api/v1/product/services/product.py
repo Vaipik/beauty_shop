@@ -1,9 +1,10 @@
 from uuid import UUID
 
-from django.db.models import F, QuerySet
-from django.db.models.query import RawQuerySet
+from django.db import transaction
+from django.db.models import QuerySet
+from django.db.models.query import RawQuerySet, Prefetch
 
-from core.product.models import Product, ProductOption
+from core.product.models import Product, ProductOption, ProductImage
 
 
 def get_list_products() -> QuerySet[Product]:
@@ -12,11 +13,10 @@ def get_list_products() -> QuerySet[Product]:
     Note that if product have no images attached to it such product will not be listed
     in queryset
     """
-    return (
-        Product.objects.prefetch_related("images", "options")
-        .filter(images__img_order=1)
-        .annotate(img_path=F("images__img_path"))
-    )
+    return Product.objects.prefetch_related(
+        Prefetch("images", queryset=ProductImage.objects.filter(img_order=1)),
+        "categories",
+    ).select_related("manufacturer")
 
 
 def get_detail_product(pk: UUID) -> QuerySet[Product]:
@@ -34,11 +34,11 @@ def get_detail_product(pk: UUID) -> QuerySet[Product]:
     )
 
 
-def get_product_image_url(product: Product) -> str:
+def get_product_image_url(product: Product) -> str | None:
     """Accept object instance with filtered queryset via img_order equals to 1."""
-    image = product.images.first()
+    image = product.images.all()
     if image:
-        return image.img_path.url
+        return image[0].img_path.url
 
 
 def get_product_options(product_id: UUID) -> RawQuerySet:
@@ -65,3 +65,28 @@ def get_product_options(product_id: UUID) -> RawQuerySet:
 def get_products_for_category(category_id: UUID) -> QuerySet[Product]:
     """Return all products for a category."""
     return Product.objects.filter(categories__id=category_id)
+
+
+@transaction.atomic
+def create_product(validated_data: dict) -> Product:
+    """Create a product instance with nested data in one transaction.
+
+    Product instance using an existing categories, options and manufacturer to create
+    but images are saving to db. Mean they were not previously loaded.
+    """
+    manufacturer = validated_data.pop("manufacturer")
+    categories = validated_data.pop("categories")
+    options = validated_data.pop("options")
+    images = validated_data.pop("images")
+    product = Product.objects.create(
+        **validated_data,
+        manufacturer=manufacturer,
+    )
+    for image in images:
+        ProductImage.objects.create(
+            img_order=image["img_order"], img_path=image["img_path"], product=product
+        )
+    product.categories.add(*categories)
+    product.options.add(*options)
+
+    return product

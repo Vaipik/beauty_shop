@@ -7,7 +7,7 @@ from api.v1.product.serializers.common import TreeListResponseSerializer
 class ProductOptionCreateResponseSeriliazer(serializers.ModelSerializer):
     """Serializer for created option."""
 
-    class Meta:  # noqa D106
+    class Meta:
         model = ProductOption
         fields = ["id", "name"]
 

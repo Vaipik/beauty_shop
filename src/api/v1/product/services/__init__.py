@@ -11,6 +11,7 @@ from .option import (
 )
 
 from .product import (
+    create_product,
     get_list_products,
     get_detail_product,
     get_product_image_url,
@@ -23,6 +24,7 @@ __all__ = [
     "create_child_category",
     "create_root_option",
     "create_child_option",
+    "create_product",
     "get_list_products",
     "get_detail_product",
     "get_product_image_url",

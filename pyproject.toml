@@ -42,4 +42,4 @@ select = [
     "D"
 ]
 exclude = ["settings.py", "admin.py", "apps.py", "migrations", "README.md"]
-ignore = ["D100", "D104", "D105", "D107", "F821"]
+ignore = ["D100", "D104", "D105", "D106", "D107", "F821",]

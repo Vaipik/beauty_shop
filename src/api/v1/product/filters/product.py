@@ -14,6 +14,6 @@ class ProductFilter(filters.FilterSet):
         field_name="manufacturer__name", lookup_expr="iexact"
     )
 
-    class Meta:  # noqa D106
+    class Meta:
         model = Product
         fields = ["status"]
