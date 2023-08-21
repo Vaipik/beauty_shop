@@ -66,7 +66,7 @@ class Product(Base, TimeStampedBase):
         blank=True,
     )
 
-    class Meta:  # noqa D106
+    class Meta:
         db_table = "products"
         verbose_name = _("Product")
         verbose_name_plural = _("Product")

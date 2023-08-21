@@ -20,7 +20,7 @@ class ProductImage(Base, TimeStampedBase):
         null=False,
     )
 
-    class Meta:  # noqa D106
+    class Meta:
         db_table = "product_images"
         verbose_name = _("Product image")
         verbose_name_plural = _("Product images")

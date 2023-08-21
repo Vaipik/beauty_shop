@@ -18,7 +18,7 @@ class ProductManufacturer(Base):
         null=True,
     )
 
-    class Meta:  # noqa D106
+    class Meta:
         db_table = "manufacturers"
         verbose_name = _("Manufacturer")
         verbose_name_plural = _("Manufacturers")

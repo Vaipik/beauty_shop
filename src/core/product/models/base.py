@@ -14,7 +14,7 @@ class Base(models.Model):
         unique=True,
     )
 
-    class Meta:  # noqa D106
+    class Meta:
         abstract = True
 
 
@@ -30,5 +30,5 @@ class TimeStampedBase(models.Model):
         auto_now=True,
     )
 
-    class Meta:  # noqa D106
+    class Meta:
         abstract = True

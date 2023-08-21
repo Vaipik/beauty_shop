@@ -28,7 +28,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Different serializers require different querysets."""
-        if self.action == "list":
+        if self.action == "list" or "create":
             return services.get_list_products()
         if self.action == "retrieve":
             return services.get_detail_product(self.kwargs["pk"])
