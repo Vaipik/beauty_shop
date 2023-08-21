@@ -22,4 +22,4 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff
       - name: Run ruff
-        run: ruff check --format=github --select E,F,D --ignore D100,D104,D105,D107,F821 src
+        run: ruff check --format=github --select E,F,D --ignore D100,D104,D105,D106,D107,F821 src

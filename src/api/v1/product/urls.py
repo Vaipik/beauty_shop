@@ -1,7 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
-from .views import ProductViewSet, ProductOptionViewSet, ProductCategoryViewSet
+from .views import (
+    ProductViewSet,
+    ProductOptionViewSet,
+    ProductCategoryViewSet,
+    ProductImageViewSet,
+)
 
 product_router = SimpleRouter()
 product_router.register(prefix="products", viewset=ProductViewSet, basename="products")
@@ -16,10 +21,15 @@ option_router.register(
     prefix="options", viewset=ProductOptionViewSet, basename="options"
 )
 
+image_router = SimpleRouter()
+image_router.register(prefix="images", viewset=ProductImageViewSet, basename="images")
+
+
 app_name = "product"
 
 urlpatterns = [
     path("", include(product_router.urls)),
     path("", include(category_router.urls)),
     path("", include(option_router.urls)),
+    path("", include(image_router.urls)),
 ]

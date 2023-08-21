@@ -15,7 +15,7 @@ class ProductOption(Base, MP_Node):
     )
     node_order_by = ["name"]
 
-    class Meta:  # noqa D106
+    class Meta:
         db_table = "product_options"
         verbose_name = _("Product option")
         verbose_name_plural = _("Product options")
