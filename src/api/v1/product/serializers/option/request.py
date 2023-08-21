@@ -9,7 +9,7 @@ class ProductOptionCreateRequestSeriliazer(serializers.ModelSerializer):
     name = serializers.CharField()
     parent_id = serializers.UUIDField(allow_null=True, format="hex_verbose")
 
-    class Meta:  # noqa D106
+    class Meta:
         model = ProductOption
         fields = ["id", "name", "parent_id"]
         read_only_fields = ["id"]

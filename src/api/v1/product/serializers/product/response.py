@@ -3,6 +3,9 @@ from rest_framework import serializers
 
 from core.product.models import Product
 from api.v1.product.serializers.image import ProductImageListResponseSerializer
+from api.v1.product.serializers.manufacturer import (
+    ProductManufacturerResponseSerializer,
+)
 from api.v1.product import services
 from .common import ProductOptionListSerializer
 
@@ -13,9 +16,11 @@ class ProductListResponseSerializer(serializers.ModelSerializer):
     Primary usage is at the main page to obtain product list with only one image.
     """
 
+    # img_url = ProductImageListResponseSerializer(source="images", many=True)
     img_url = serializers.SerializerMethodField()
+    manufacturer = ProductManufacturerResponseSerializer()
 
-    class Meta:  # noqa D106
+    class Meta:
         model = Product
         fields = ["id", "name", "manufacturer", "price", "rating", "sku", "img_url"]
 
@@ -31,12 +36,12 @@ class ProductDetailResponseSerializer(serializers.ModelSerializer):
     """Detailed view of product with full list of images and options."""
 
     images = ProductImageListResponseSerializer(many=True, read_only=True)
-    manufacturer = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    manufacturer = ProductManufacturerResponseSerializer()
     options = serializers.SerializerMethodField()
 
-    class Meta:  # noqa D106
+    class Meta:
         model = Product
-        exclude = ["id", "categories"]
+        exclude = ["id", "categories", "created_at", "updated_at"]
 
     @extend_schema_field(ProductOptionListSerializer(many=True))
     def get_options(self, instance: Product):

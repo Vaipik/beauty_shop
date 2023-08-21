@@ -2,15 +2,18 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 
 from ..filters import ProductFilter
-from ..serializers import ProductDetailResponseSerializer, ProductListResponseSerializer
+from ..serializers import (
+    ProductDetailResponseSerializer,
+    ProductListResponseSerializer,
+    ProductCreateRequestSerializer,
+)
 from .. import services
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     """Represent product routes. PUT method is excluded because of NULL."""
 
-    serializer_class = ProductDetailResponseSerializer
-    http_method_names = ["get"]
+    http_method_names = ["get", "post"]
     filterset_class = ProductFilter
 
     def get_serializer_class(self):
@@ -19,6 +22,8 @@ class ProductViewSet(viewsets.ModelViewSet):
             return ProductListResponseSerializer
         if self.action == "retrieve":
             return ProductDetailResponseSerializer
+        if self.action == "create":
+            return ProductCreateRequestSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):

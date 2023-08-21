@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -89,9 +91,11 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         description="List of products for category.",
     )
     @action(
-        detail=True, methods=["get"], serializer_class=ProductListResponseSerializer
+        detail=True,
+        methods=["get"],
+        serializer_class=ProductListResponseSerializer,
     )
-    def products(self, request, pk=None):
+    def products(self, request, pk: UUID = None):
         """Extra route to obtain list of products for a category."""
         queryset = self.get_queryset()
         serialzer = self.get_serializer(queryset, many=True)
@@ -106,7 +110,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         methods=["get"],
         serializer_class=ProductOptionListResponseSerializer,
     )
-    def options(self, request, pk=None):
+    def options(self, request, pk: UUID = None):
         """Extra route to obtain list of products for a category."""
         queryset = self.get_queryset()
         serialzer = self.get_serializer(queryset, many=True)

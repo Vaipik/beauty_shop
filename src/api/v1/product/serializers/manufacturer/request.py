@@ -6,6 +6,6 @@ from core.product.models import ProductManufacturer
 class ProductManufacturerCreateRequestSerializer(serializers.ModelSerializer):
     """Schema to create a manufacturer."""
 
-    class Meta:  # noqa D106
+    class Meta:
         model = ProductManufacturer
         fields = ["name"]
