@@ -44,6 +44,12 @@ class Product(Base, TimeStampedBase):
         choices=ProductStatusChoices.choices,
         default=ProductStatusChoices.IN_STOCK,
     )
+    is_luxury = models.BooleanField(
+        verbose_name=_("Luxury"),
+        null=False,
+        blank=False,
+        default=False,
+    )
     manufacturer = models.ForeignKey(
         to="ProductManufacturer",
         on_delete=models.SET_NULL,
