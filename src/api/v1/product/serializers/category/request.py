@@ -6,10 +6,15 @@ from core.product.models import ProductCategory
 class ProductCategoryCreateRequestSeriliazer(serializers.ModelSerializer):
     """Serializer for input data to add a new option."""
 
-    name = serializers.CharField()
     parent_id = serializers.UUIDField(allow_null=True, format="hex_verbose")
 
     class Meta:
         model = ProductCategory
-        fields = ["id", "name", "parent_id"]
-        read_only_fields = ["id"]
+        fields = ["name", "parent_id"]
+
+
+class ProductCategoryPartialUpdateRequestSerializer(serializers.Serializer):
+    """Serializer used to perform a partial update of category."""
+
+    name = serializers.CharField(allow_null=True, allow_blank=True)
+    parent_id = serializers.UUIDField(allow_null=True, format="hex_verbose")

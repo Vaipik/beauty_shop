@@ -1,3 +1,4 @@
+from django.db import transaction
 from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -8,6 +9,8 @@ from ..serializers import (
     ProductOptionListResponseSerializer,
     ProductOptionCreateRequestSeriliazer,
     ProductOptionCreateResponseSeriliazer,
+    ProductOptionPartialUpdateRequestSerializer,
+    ProductOptionPatchResponseSerializer,
 )
 from .. import services
 
@@ -15,8 +18,7 @@ from .. import services
 class ProductOptionViewSet(viewsets.ModelViewSet):
     """Viewset for options that are binded for products."""
 
-    serializer_class = ProductOptionListResponseSerializer
-    http_method_names = ["get", "post"]
+    http_method_names = ["get", "post", "patch", "delete"]
 
     def get_queryset(self):
         """Choose which queryset should be queried."""
@@ -32,6 +34,8 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
             return ProductOptionListResponseSerializer
         if self.action == "create":
             return ProductOptionCreateRequestSeriliazer
+        if self.action == "partial_update":
+            return ProductOptionPartialUpdateRequestSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -95,3 +99,37 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request, *args, **kwargs):  # noqa D102
         return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        description="This endpoint is used to make a partial update of category."
+        " E.g change category name or move it to another parent category"
+        " with all its children. If you want only to change name leave"
+        " parent id empty, if you want to move category provide parent id.",
+        request=ProductOptionPartialUpdateRequestSerializer,
+        responses=ProductOptionPatchResponseSerializer,
+        examples=swagger_examples.patch_tree_example(),
+    )
+    @transaction.atomic
+    def partial_update(self, request, *args, **kwargs):
+        """PATCH for the option. Can be removed to another parent or renamed."""
+        partial = True
+        instance = self.get_queryset()
+        request_serializer = self.get_serializer(
+            instance, data=request.data, partial=partial
+        )
+        request_serializer.is_valid(raise_exception=True)
+        update_cat = services.patch_option(instance, **request.data)
+        if request.data.get("parent_id"):
+            response_serializer = ProductOptionPatchResponseSerializer(
+                update_cat, many=True
+            )
+        else:
+            instance.refresh_from_db()
+            response_serializer = ProductOptionPatchResponseSerializer(instance)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        """Delete given option and its descendants."""
+        instance = self.get_queryset()
+        services.delete_option(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)

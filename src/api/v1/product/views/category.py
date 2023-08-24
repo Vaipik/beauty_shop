@@ -13,6 +13,8 @@ from ..serializers import (
     ProductCategoryListResponseSerializer,
     ProductOptionListResponseSerializer,
     ProductListResponseSerializer,
+    ProductCategoryPartialUpdateRequestSerializer,
+    ProductCategoryPatchResponseSerializer,
 )
 from .. import services
 
@@ -21,7 +23,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
     """Viewset for categories that are binded for products."""
 
     serializer_class = ProductCategoryListResponseSerializer
-    http_method_names = ["get", "post"]
+    http_method_names = ["get", "post", "patch", "delete"]
 
     def get_queryset(self):
         """Choose which queryset should be queried."""
@@ -30,15 +32,24 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             node = ProductCategory.objects.get(pk=self.kwargs["pk"])
             return ProductCategory.get_tree(node)
+        if self.action == "partial_update":
+            return ProductCategory.objects.get(pk=self.kwargs["pk"])
+        if self.action == "destroy":
+            return ProductCategory.objects.get(pk=self.kwargs["pk"])
         if self.action == "products":
             return services.get_products_for_category(self.kwargs["pk"])
         if self.action == "options":
             return services.get_product_options_in_category(self.kwargs["pk"])
         return super().get_queryset()
 
-    def get_serializer_class(self):  # noqa D102
+    def get_serializer_class(self):
+        """Choose serializer for input data."""
         if self.action == "create":
             return ProductCategoryCreateRequestSeriliazer
+        if self.action == "partial_update":
+            return ProductCategoryPartialUpdateRequestSerializer
+        if self.action == "list":
+            return ProductCategoryListResponseSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -74,6 +85,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         description="Provide all categories that are presented."
         "Note that depth are not limited.",
         examples=swagger_examples.get_nested_examples(),
+        responses=ProductCategoryListResponseSerializer,
     )
     def list(self, request, *args, **kwargs):  # noqa D102
         return super().list(request, *args, **kwargs)
@@ -85,6 +97,39 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request, *args, **kwargs):  # noqa D102
         return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        description="This endpoint is used to make a partial update of option."
+        " E.g change option name or move it to another parent option"
+        " with all its children. If you want only to change name leave"
+        " parent id empty, if you want to move option provide parent id.",
+        request=ProductCategoryPartialUpdateRequestSerializer,
+        responses=ProductCategoryPatchResponseSerializer,
+        examples=swagger_examples.patch_tree_example(),
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """PATCH for the category. Can be removed to another parent or renamed."""
+        partial = True
+        instance = self.get_queryset()
+        request_serializer = self.get_serializer(
+            instance, data=request.data, partial=partial
+        )
+        request_serializer.is_valid(raise_exception=True)
+        update_cat = services.patch_category(instance, **request.data)
+        if request.data.get("parent_id"):
+            response_serializer = ProductCategoryPatchResponseSerializer(
+                update_cat, many=True
+            )
+        else:
+            instance.refresh_from_db()
+            response_serializer = ProductCategoryPatchResponseSerializer(instance)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        """Delete the category and its descendants."""
+        instance = self.get_queryset()
+        services.delete_category(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(
         responses=ProductListResponseSerializer(many=True),

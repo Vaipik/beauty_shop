@@ -16,3 +16,9 @@ class ProductOptionListResponseSerializer(TreeListResponseSerializer):
     """Serializer that represent existing options with their suboptions."""
 
     pass
+
+
+class ProductOptionPatchResponseSerializer(TreeListResponseSerializer):
+    """Serializer that represent updated options tree."""
+
+    pass
