@@ -1,5 +1,8 @@
 from uuid import UUID
 
+from django.db import transaction
+from django.db.models import QuerySet
+
 from core.product.models import ProductCategory
 
 
@@ -34,3 +37,28 @@ def create_child_category(name: str, parent_id: UUID) -> ProductCategory:
     parent_category = ProductCategory.objects.get(pk=parent_id)
     child_category = parent_category.add_child(name=name)
     return child_category
+
+
+@transaction.atomic
+def patch_category(
+    category: ProductCategory, name: str | None = None, parent_id: UUID | None = None
+) -> QuerySet[ProductCategory]:
+    """Perform a partial update of category.
+
+    Change a name of a category if it was given and(or) move category to parent node
+    if it was given.
+    """
+    if parent_id is not None:
+        parent_node = ProductCategory.objects.get(pk=parent_id)
+        category.move(parent_node, pos="sorted-child")
+        return ProductCategory.get_root_nodes()
+    if name is not None:
+        category.name = name
+        category.save()
+    return ProductCategory.get_tree(category)
+
+
+@transaction.atomic
+def delete_category(category: ProductCategory) -> None:
+    """Delete a category and it descendants from db."""
+    category.delete()
