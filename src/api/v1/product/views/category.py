@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from core.product.models import ProductCategory
 from api.v1.product import swagger_examples
-from ..serializers import (
+from api.v1.product.serializers import (
     ProductCategoryCreateRequestSeriliazer,
     ProductCategoryCreateResponseSeriliazer,
     ProductCategoryListResponseSerializer,
@@ -16,7 +16,7 @@ from ..serializers import (
     ProductCategoryPartialUpdateRequestSerializer,
     ProductCategoryPatchResponseSerializer,
 )
-from .. import services
+from api.v1.product import services
 
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):

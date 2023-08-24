@@ -1,14 +1,14 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 
-from ..filters import ProductFilter
-from ..serializers import (
+from api.v1.product.filters import ProductFilter
+from api.v1.product.serializers import (
     ProductDetailResponseSerializer,
     ProductListResponseSerializer,
     ProductCreateRequestSerializer,
     ProductFullResponseSerializer,
 )
-from .. import services
+from api.v1.product import services
 
 
 class ProductViewSet(viewsets.ModelViewSet):
