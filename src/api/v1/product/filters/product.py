@@ -16,4 +16,4 @@ class ProductFilter(filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ["status"]
+        fields = ["status", "is_luxury"]

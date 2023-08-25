@@ -8,4 +8,4 @@ class ProductImageCreateRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductImage
-        exclude = ["id"]
+        fields = ["img_order", "img_path"]
