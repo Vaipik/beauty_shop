@@ -1,5 +1,6 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 
 from api.v1.product.filters import ProductFilter
 from api.v1.product.serializers import (
@@ -7,6 +8,7 @@ from api.v1.product.serializers import (
     ProductListResponseSerializer,
     ProductCreateRequestSerializer,
     ProductFullResponseSerializer,
+    ProductPatchRequestSerializer,
 )
 from api.v1.product import services
 
@@ -14,7 +16,7 @@ from api.v1.product import services
 class ProductViewSet(viewsets.ModelViewSet):
     """Represent product routes. PUT method is excluded because of NULL."""
 
-    http_method_names = ["get", "post"]
+    http_method_names = ["get", "post", "patch", "delete"]
     filterset_class = ProductFilter
 
     def get_serializer_class(self):
@@ -25,15 +27,16 @@ class ProductViewSet(viewsets.ModelViewSet):
             return ProductDetailResponseSerializer
         if self.action == "create":
             return ProductCreateRequestSerializer
+        if self.action == "partial_update":
+            return ProductPatchRequestSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):
         """Different serializers require different querysets."""
-        if self.action == "list" or "create":
+        if self.action == "list":
             return services.get_list_products()
-        if self.action == "retrieve":
+        if self.action in ["retrieve", "destroy", "partial_update"]:
             return services.get_detail_product(self.kwargs["pk"])
-
         return super().get_queryset()
 
     @extend_schema(
@@ -60,3 +63,26 @@ class ProductViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request, pk=None):  # noqa D102
         return super().retrieve(request, pk)
+
+    @extend_schema(
+        description="Perform an update for product. If you want to add new images"
+        "than leave id field empty or null.",
+        request=ProductPatchRequestSerializer,
+        responses=ProductDetailResponseSerializer,
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """PATCH for the product."""
+        instance = self.get_queryset()
+        request_serializer = self.get_serializer(
+            instance, data=request.data, partial=True
+        )
+        request_serializer.is_valid(raise_exception=True)
+        update_cat = services.patch_product(instance, **request.data)
+        response_serializer = ProductDetailResponseSerializer(update_cat)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        """Delete product and images."""
+        instance = self.get_queryset()
+        services.delete_product(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
