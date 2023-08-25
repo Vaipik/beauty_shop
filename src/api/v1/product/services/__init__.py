@@ -21,6 +21,8 @@ from .product import (
     get_product_image_url,
     get_product_options,
     get_products_for_category,
+    patch_product,
+    delete_product,
 )
 
 __all__ = [
@@ -39,6 +41,8 @@ __all__ = [
     "get_product_options_in_category",
     "patch_category",
     "patch_option",
+    "patch_product",
     "delete_category",
     "delete_option",
+    "delete_product",
 ]

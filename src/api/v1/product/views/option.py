@@ -4,15 +4,15 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from core.product.models import ProductOption
+from api.v1.product import services
 from api.v1.product import swagger_examples
-from ..serializers import (
+from api.v1.product.serializers import (
     ProductOptionListResponseSerializer,
     ProductOptionCreateRequestSeriliazer,
     ProductOptionCreateResponseSeriliazer,
     ProductOptionPartialUpdateRequestSerializer,
     ProductOptionPatchResponseSerializer,
 )
-from .. import services
 
 
 class ProductOptionViewSet(viewsets.ModelViewSet):

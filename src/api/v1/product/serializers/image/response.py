@@ -8,4 +8,4 @@ class ProductImageListResponseSerializer(serializers.ModelSerializer):  # noqa D
 
     class Meta:
         model = ProductImage
-        fields = ["img_path", "img_order"]
+        fields = ["id", "img_path", "img_order"]
