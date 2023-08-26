@@ -8,4 +8,4 @@ class ProductManufacturerResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductManufacturer
-        fields = ["id", "name"]
+        fields = ["id", "name", "description"]

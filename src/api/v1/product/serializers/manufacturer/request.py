@@ -8,4 +8,4 @@ class ProductManufacturerCreateRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductManufacturer
-        fields = ["name"]
+        fields = ["id", "name", "description"]
