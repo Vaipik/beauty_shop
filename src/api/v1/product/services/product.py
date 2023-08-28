@@ -90,3 +90,14 @@ def create_product(validated_data: dict) -> Product:
     product.options.add(*options)
 
     return product
+
+
+def get_products_by_manufacturer(pk: UUID):
+    return (
+        Product.objects.prefetch_related(
+            Prefetch("images", queryset=ProductImage.objects.filter(img_order=1)),
+            "categories",
+        )
+        .select_related("manufacturer")
+        .filter(manufacturer_id=pk)
+    )
