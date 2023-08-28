@@ -13,3 +13,10 @@ class ProductOptionCreateRequestSeriliazer(serializers.ModelSerializer):
         model = ProductOption
         fields = ["id", "name", "parent_id"]
         read_only_fields = ["id"]
+
+
+class ProductOptionPartialUpdateRequestSerializer(serializers.Serializer):
+    """Serializer used to perform a partial update of option."""
+
+    name = serializers.CharField(allow_null=True, allow_blank=True)
+    parent_id = serializers.UUIDField(allow_null=True, format="hex_verbose")

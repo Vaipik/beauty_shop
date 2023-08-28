@@ -16,3 +16,15 @@ class ProductCategoryListResponseSerializer(TreeListResponseSerializer):
     """Serializer that represent existing categories with their subcategories."""
 
     pass
+
+
+class ProductCategoryPatchResponseSerializer(TreeListResponseSerializer):
+    """Serializer that perfrom a response for update category."""
+
+    pass
+
+
+class ProductCategoryDeleteResponseSerializer(TreeListResponseSerializer):
+    """Serializer that perform a response for delete category."""
+
+    pass

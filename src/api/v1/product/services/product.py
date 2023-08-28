@@ -91,7 +91,51 @@ def create_product(validated_data: dict) -> Product:
 
     return product
 
+  
+@transaction.atomic
+def patch_product(validated_data: dict) -> Product:
+    """Perform a data update for product in database."""
+    id_ = validated_data.pop("id")
+    product = (
+        Product.objects.prefetch_related("images", "categories", "options")
+        .select_related("manufacturer")
+        .get(pk=id_)
+    )
+    manufacturer = validated_data.pop("manufacturer")
+    categories = validated_data.pop("categories")
+    options = validated_data.pop("options")
+    images = validated_data.pop("images")
+    new_images = filter(lambda x: x.get("id") is None, images)
+    old_images = filter(lambda x: x.get("id") is not None, images)
+    if categories:
+        product.categories.clear()
+        product.categories.add(*categories)
+    if options:
+        product.options.clear()
+        product.options.add(*options)
+    if manufacturer:
+        product.manufacturer = manufacturer
+    if images:
+        if new_images:
+            [
+                ProductImage.objects.create(
+                    img_order=image["img_order"],
+                    img_path=image["img_path"],
+                    product=product,
+                )
+                for image in new_images
+            ]
+        if old_images:
+            [product.images.update(img_order=image["img_order"]) for image in images]
+    product.save()
+    return product
 
+
+def delete_product(instance: Product) -> None:
+    """Delete product from database with images."""
+    instance.delete()
+
+    
 def get_products_by_manufacturer(pk: UUID):
     return (
         Product.objects.prefetch_related(
