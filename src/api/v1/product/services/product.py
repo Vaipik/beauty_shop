@@ -91,7 +91,7 @@ def create_product(validated_data: dict) -> Product:
 
     return product
 
-
+  
 @transaction.atomic
 def patch_product(validated_data: dict) -> Product:
     """Perform a data update for product in database."""
@@ -134,3 +134,14 @@ def patch_product(validated_data: dict) -> Product:
 def delete_product(instance: Product) -> None:
     """Delete product from database with images."""
     instance.delete()
+
+    
+def get_products_by_manufacturer(pk: UUID):
+    return (
+        Product.objects.prefetch_related(
+            Prefetch("images", queryset=ProductImage.objects.filter(img_order=1)),
+            "categories",
+        )
+        .select_related("manufacturer")
+        .filter(manufacturer_id=pk)
+    )
