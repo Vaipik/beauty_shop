@@ -10,7 +10,8 @@ from core.product.models import ProductManufacturer
 from api.v1.product import services
 from api.v1.product.serializers import (
     ProductManufacturerResponseSerializer,
-    ProductManufacturerCreateRequestSerializer, ProductListResponseSerializer,
+    ProductManufacturerCreateRequestSerializer,
+    ProductListResponseSerializer,
 )
 
 
@@ -21,15 +22,15 @@ class ProductManufacturerViewSet(viewsets.ModelViewSet):
     queryset = ProductManufacturer.objects.all()
     http_method_names = ["get", "post", "patch", "delete"]
 
-    def get_queryset(self):
+    def get_queryset(self):  # noqa D102
         if self.action == "products":
             return services.get_products_by_manufacturer(self.kwargs["pk"])
         return super().get_queryset()
 
-    def get_serializer_class(self):
+    def get_serializer_class(self):  # noqa D102
         if self.action == "products":
             return ProductListResponseSerializer
-        return super().get_serializer_class
+        return super().get_serializer_class()
 
     @extend_schema(
         description="This endpoint is used to create manufacturer. If you want to "
@@ -52,7 +53,7 @@ class ProductManufacturerViewSet(viewsets.ModelViewSet):
         serializer_class=ProductListResponseSerializer,
     )
     def products(self, request, pk: UUID = None):
-        """Extra route to obtain list of products for a category."""
+        """Extra route to obtain list of products related to manufacturer.."""
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=200)

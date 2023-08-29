@@ -11,7 +11,7 @@ from .views import (
 
 manufacturer_router = SimpleRouter()
 manufacturer_router.register(
-    prefix="manufacturer", viewset=ProductManufacturerViewSet, basename="manufacturer"
+    prefix="manufacturers", viewset=ProductManufacturerViewSet, basename="manufacturers"
 )
 
 product_router = SimpleRouter()

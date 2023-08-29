@@ -21,6 +21,7 @@ from .product import (
     get_product_image_url,
     get_product_options,
     get_products_for_category,
+    get_products_by_manufacturer,
     patch_product,
     delete_product,
 )
