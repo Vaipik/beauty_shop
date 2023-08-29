@@ -9,7 +9,7 @@ from .common import ProductImagePatchSerializer
 class ProductCreateRequestSerializer(serializers.ModelSerializer):
     """Serializer to create a new product with nested images, options and cats."""
 
-    images = ProductImageCreateRequestSerializer(many=True)
+    images = ProductImageCreateRequestSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -17,19 +17,11 @@ class ProductCreateRequestSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data) -> Product:
         """To create a product instance with nested serializers."""
-        return services.create_product(validated_data)
-
-    def validate_images(self, value: list[ProductImage]) -> list[ProductImage] | None:
-        """Validate image ordering. It must be a sequence starting from 1."""
-        if value:
-            sorted_images = sorted(value, key=lambda x: x.img_order)
-            for idx, image in enumerate(sorted_images, 1):
-                if idx != image.img_order:
-                    raise serializers.ValidationError(
-                        detail="Ordering must be consistent",
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
-            return value
+        request = self.context.get("request")
+        images = request.FILES.getlist("images")
+        if not images:
+            raise serializers.ValidationError("You need to upload images.")
+        return services.create_product(validated_data, images)
 
 
 class ProductPatchRequestSerializer(serializers.ModelSerializer):

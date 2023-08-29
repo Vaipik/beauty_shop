@@ -1,3 +1,4 @@
+from typing import Collection
 from uuid import UUID
 
 from django.db import transaction
@@ -5,6 +6,7 @@ from django.db.models import QuerySet
 from django.db.models.query import RawQuerySet, Prefetch
 
 from core.product.models import Product, ProductOption, ProductImage
+from .image import create_images
 
 
 def get_list_products() -> QuerySet[Product]:
@@ -68,7 +70,7 @@ def get_products_for_category(category_id: UUID) -> QuerySet[Product]:
 
 
 @transaction.atomic
-def create_product(validated_data: dict) -> Product:
+def create_product(validated_data: dict, images: Collection) -> Product:
     """Create a product instance with nested data in one transaction.
 
     Product instance using an existing categories, options and manufacturer to create
@@ -77,15 +79,11 @@ def create_product(validated_data: dict) -> Product:
     manufacturer = validated_data.pop("manufacturer")
     categories = validated_data.pop("categories")
     options = validated_data.pop("options")
-    images = validated_data.pop("images")
     product = Product.objects.create(
         **validated_data,
         manufacturer=manufacturer,
     )
-    for image in images:
-        ProductImage.objects.create(
-            img_order=image["img_order"], img_path=image["img_path"], product=product
-        )
+    create_images(images, product)
     product.categories.add(*categories)
     product.options.add(*options)
 
