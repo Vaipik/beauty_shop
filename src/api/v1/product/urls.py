@@ -6,6 +6,12 @@ from .views import (
     ProductOptionViewSet,
     ProductCategoryViewSet,
     ProductImageViewSet,
+    ProductManufacturerViewSet,
+)
+
+manufacturer_router = SimpleRouter()
+manufacturer_router.register(
+    prefix="manufacturers", viewset=ProductManufacturerViewSet, basename="manufacturers"
 )
 
 product_router = SimpleRouter()
@@ -32,4 +38,5 @@ urlpatterns = [
     path("", include(category_router.urls)),
     path("", include(option_router.urls)),
     path("", include(image_router.urls)),
+    path("", include(manufacturer_router.urls)),
 ]

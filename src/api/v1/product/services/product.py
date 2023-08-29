@@ -134,3 +134,15 @@ def patch_product(validated_data: dict) -> Product:
 def delete_product(instance: Product) -> None:
     """Delete product from database with images."""
     instance.delete()
+
+
+def get_products_by_manufacturer(pk: UUID):
+    """Return a queryset with product instances related to given manufacturer."""
+    return (
+        Product.objects.prefetch_related(
+            Prefetch("images", queryset=ProductImage.objects.filter(img_order=1)),
+            "categories",
+        )
+        .select_related("manufacturer")
+        .filter(manufacturer_id=pk)
+    )

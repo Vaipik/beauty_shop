@@ -16,13 +16,11 @@ class ProductListResponseSerializer(serializers.ModelSerializer):
     Primary usage is at the main page to obtain product list with only one image.
     """
 
-    # img_url = ProductImageListResponseSerializer(source="images", many=True)
     img_url = serializers.SerializerMethodField()
-    manufacturer = ProductManufacturerResponseSerializer()
 
     class Meta:
         model = Product
-        fields = ["id", "name", "manufacturer", "price", "rating", "sku", "img_url"]
+        fields = ["id", "name", "price", "rating", "sku", "img_url"]
 
     def get_img_url(self, obj: Product) -> str | None:
         """Return image url with order equals to 1 or None if it does not exist."""
