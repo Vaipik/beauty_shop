@@ -41,7 +41,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
     @extend_schema(
         description="This endpoint is used to create an option and suboptions for"
         "products. If you want to create a root of your options tree you"
-        "don't need to pass a parent_id, leave it NULL. If you want to"
+        "don't need to pass a parentId, leave it NULL. If you want to"
         "create a suboption than you need to provide a parentId of option"
         "and provide a name for suboption.",
         request=ProductOptionCreateRequestSeriliazer,
@@ -50,10 +50,10 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
             OpenApiExample(
                 "Root node",
                 summary="Root node",
-                description="Leave parent_id as null to create a root node.",
+                description="Leave parentId as null to create a root node.",
                 value={
                     "name": "option name",
-                    "parent_id": None,
+                    "parentId": None,
                 },
             ),
             OpenApiExample(
@@ -62,7 +62,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
                 description="Provide id of parent node to create a child node.",
                 value={
                     "name": "option name",
-                    "parent_id": "58b45f63-634a-4c5b-8594-c5729e9aa655",
+                    "parentId": "58b45f63-634a-4c5b-8594-c5729e9aa655",
                 },
             ),
         ],
@@ -76,7 +76,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if parent_id := serializer.data.get("parent_id"):
+        if parent_id := serializer.data.get("parentId"):
             option = services.create_child_option(serializer.data["name"], parent_id)
         else:
             option = services.create_root_option(serializer.data["name"])
@@ -119,7 +119,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         )
         request_serializer.is_valid(raise_exception=True)
         update_cat = services.patch_option(instance, **request.data)
-        if request.data.get("parent_id"):
+        if request.data.get("parentId"):
             response_serializer = ProductOptionPatchResponseSerializer(
                 update_cat, many=True
             )

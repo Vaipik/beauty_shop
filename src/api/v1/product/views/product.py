@@ -72,13 +72,13 @@ class ProductViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """PATCH for the product."""
-        instance = self.get_queryset()
+        instance = self.get_queryset().all()[0]  # noqa only this works with filters
         request_serializer = self.get_serializer(
             instance, data=request.data, partial=True
         )
         request_serializer.is_valid(raise_exception=True)
-        update_cat = services.patch_product(instance, **request.data)
-        response_serializer = ProductDetailResponseSerializer(update_cat)
+        updated_product = request_serializer.save()
+        response_serializer = ProductDetailResponseSerializer(updated_product)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):

@@ -8,5 +8,5 @@ class ProductImageViewSet(viewsets.ModelViewSet):
     """Endpoints for operations with images."""
 
     serializer_class = ProductImageCreateRequestSerializer
-    http_method_names = ["get", "post"]
+    http_method_names = ["get", "post", "patch", "delete"]
     queryset = ProductImage.objects.all()

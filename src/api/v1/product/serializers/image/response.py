@@ -3,9 +3,12 @@ from rest_framework import serializers
 from core.product.models import ProductImage
 
 
-class ProductImageListResponseSerializer(serializers.ModelSerializer):  # noqa D101
-    img_path = serializers.ImageField(use_url=True)
+class ProductImageListResponseSerializer(serializers.ModelSerializer):
+    """Serializer for GET response."""
+
+    imgOrder = serializers.IntegerField(source="img_order")
+    imgURL = serializers.ImageField(source="img_path", use_url=True)
 
     class Meta:
         model = ProductImage
-        fields = ["id", "img_path", "img_order"]
+        fields = ["id", "imgURL", "imgOrder"]

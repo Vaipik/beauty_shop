@@ -53,10 +53,10 @@ def get_created_tree_examples():
         OpenApiExample(
             "Root node",
             summary="Root node",
-            description="Leave parent_id as null to create a root node.",
+            description="Leave parentId as null to create a root node.",
             value={
                 "name": "root name",
-                "parent_id": None,
+                "parentId": None,
             },
         ),
         OpenApiExample(
@@ -65,7 +65,7 @@ def get_created_tree_examples():
             description="Provide id of parent node to create a child node.",
             value={
                 "name": "child name",
-                "parent_id": "58b45f63-634a-4c5b-8594-c5729e9aa655",
+                "parentId": "58b45f63-634a-4c5b-8594-c5729e9aa655",
             },
         ),
     ]
