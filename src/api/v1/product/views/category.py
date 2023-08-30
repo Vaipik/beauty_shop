@@ -109,10 +109,9 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         """PATCH for the category. Can be removed to another parent or renamed."""
-        partial = True
         instance = self.get_queryset()
         request_serializer = self.get_serializer(
-            instance, data=request.data, partial=partial
+            instance, data=request.data, partial=True
         )
         request_serializer.is_valid(raise_exception=True)
         update_cat = services.patch_category(instance, **request.data)

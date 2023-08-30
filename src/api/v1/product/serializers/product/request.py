@@ -1,15 +1,12 @@
-from rest_framework import serializers, status
+from rest_framework import serializers
 
-from core.product.models import Product, ProductImage
+from core.product.models import Product
 from api.v1.product import services
-from api.v1.product.serializers import ProductImageCreateRequestSerializer
-from .common import ProductImagePatchSerializer
+from api.v1.product.serializers.image.request import ProductImagePatchRequestSerializer
 
 
 class ProductCreateRequestSerializer(serializers.ModelSerializer):
     """Serializer to create a new product with nested images, options and cats."""
-
-    images = ProductImageCreateRequestSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -27,20 +24,26 @@ class ProductCreateRequestSerializer(serializers.ModelSerializer):
 class ProductPatchRequestSerializer(serializers.ModelSerializer):
     """Serializer for updating product data."""
 
-    images = ProductImagePatchSerializer(many=True)
+    oldImages = ProductImagePatchRequestSerializer(many=True, source="images")
 
     class Meta:
         model = Product
         exclude = ["id"]
 
-    def validate_images(self, value: list[ProductImage]) -> list[ProductImage] | None:
-        """Validate image ordering. It must be a sequence starting from 1."""
-        if value:
-            sorted_images = sorted(value, key=lambda x: x.img_order)
-            for idx, image in enumerate(sorted_images, 1):
-                if idx != image.img_order:
-                    raise serializers.ValidationError(
-                        detail="Ordering must be consistent",
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
-            return value
+    def update(self, instance, validated_data) -> Product:
+        """Update images using json data of existing images and save new via form."""
+        request = self.context.get("request")
+        old_images = validated_data["images"]
+        new_images = request.FILES.getlist("images")
+        if not new_images:
+            self.validate_old_images(old_images)
+        updated_product = services.patch_product(instance, validated_data, new_images)
+        return updated_product
+
+    def validate_old_images(self, old_images: dict) -> None:
+        """If user didn't upload new images performs a rearrange of existing images."""
+        for idx, image in enumerate(
+            sorted(old_images, key=lambda x: x["img_order"]), 1
+        ):
+            if idx != image["img_order"]:
+                raise serializers.ValidationError("Image ordering must be consequent")

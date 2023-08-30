@@ -8,6 +8,7 @@ from .category import (
 from .image import (
     ProductImageListResponseSerializer,
     ProductImageCreateRequestSerializer,
+    ProductImagePatchRequestSerializer,
 )
 from .manufacturer import (
     ProductManufacturerResponseSerializer,
@@ -38,6 +39,7 @@ __all__ = [
     "ProductCategoryPartialUpdateRequestSerializer",
     "ProductOptionPartialUpdateRequestSerializer",
     "ProductPatchRequestSerializer",
+    "ProductImagePatchRequestSerializer",
     # Response
     "ProductCategoryCreateResponseSeriliazer",
     "ProductDetailResponseSerializer",

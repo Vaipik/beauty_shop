@@ -22,3 +22,19 @@ def create_images(images: Collection, product: Product) -> None:
         for idx, image in enumerate(images, 1)
     ]
     ProductImage.objects.bulk_create(images)
+
+
+def create_images_with_existing_images(
+    images: Collection,
+    product: Product,
+    existing_order: list[int],
+) -> None:
+    """Create images with rearranged old images ordering."""
+    missing_order = [
+        idx for idx in range(max(existing_order)) if idx not in existing_order
+    ]
+    images = [
+        ProductImage(img_order=idx, img_path=image, product=product)
+        for idx, image in zip(missing_order, images)
+    ]
+    ProductImage.objects.bulk_create(images)

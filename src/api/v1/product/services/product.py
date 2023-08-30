@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 from django.db.models.query import RawQuerySet, Prefetch
 
 from core.product.models import Product, ProductOption, ProductImage
-from .image import create_images
+from .image import create_images, create_images_with_existing_images
 
 
 def get_list_products() -> QuerySet[Product]:
@@ -91,41 +91,35 @@ def create_product(validated_data: dict, images: Collection) -> Product:
 
 
 @transaction.atomic
-def patch_product(validated_data: dict) -> Product:
-    """Perform a data update for product in database."""
-    id_ = validated_data.pop("id")
-    product = (
-        Product.objects.prefetch_related("images", "categories", "options")
-        .select_related("manufacturer")
-        .get(pk=id_)
-    )
+def patch_product(
+    product: Product, validated_data: dict, images: Collection
+) -> Product:
+    """Perform a data update for product in database.
+
+    :param product: instance that should be updated.
+    :param validated_data: validated data obtained from serializer.
+    :param images: images from request.FILES.getlist("images").
+    :return:
+    """
     manufacturer = validated_data.pop("manufacturer")
     categories = validated_data.pop("categories")
     options = validated_data.pop("options")
-    images = validated_data.pop("images")
-    new_images = filter(lambda x: x.get("id") is None, images)
-    old_images = filter(lambda x: x.get("id") is not None, images)
     if categories:
-        product.categories.clear()
         product.categories.add(*categories)
     if options:
-        product.options.clear()
         product.options.add(*options)
     if manufacturer:
         product.manufacturer = manufacturer
+    old_images = validated_data.pop("images")
+    img_ordering = []
+    product.images.update(img_order=None)
+    for image in old_images:
+        img_order = image["img_order"]
+        product.images.filter(id=image["id"]).update(img_order=img_order)
+        img_ordering.append(img_order)
     if images:
-        if new_images:
-            [
-                ProductImage.objects.create(
-                    img_order=image["img_order"],
-                    img_path=image["img_path"],
-                    product=product,
-                )
-                for image in new_images
-            ]
-        if old_images:
-            [product.images.update(img_order=image["img_order"]) for image in images]
-    product.save()
+        create_images_with_existing_images(images, product, img_ordering)
+
     return product
 
 
