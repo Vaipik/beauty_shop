@@ -71,7 +71,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if parent_id := serializer.data.get("parent_id"):
+        if parent_id := serializer.data.get("parentId"):
             category = services.create_child_category(
                 serializer.data["name"], parent_id
             )
@@ -115,7 +115,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         )
         request_serializer.is_valid(raise_exception=True)
         update_cat = services.patch_category(instance, **request.data)
-        if request.data.get("parent_id"):
+        if request.data.get("parentId"):
             response_serializer = ProductCategoryPatchResponseSerializer(
                 update_cat, many=True
             )
