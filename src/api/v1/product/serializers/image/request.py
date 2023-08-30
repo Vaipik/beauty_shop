@@ -6,6 +6,19 @@ from core.product.models import ProductImage
 class ProductImageCreateRequestSerializer(serializers.ModelSerializer):
     """Upload an image that is related to a product."""
 
+    imgOrder = serializers.IntegerField(source="img_order")
+    imgURL = serializers.ImageField(source="img_path")
+
     class Meta:
         model = ProductImage
-        fields = ["img_order", "img_path"]
+        fields = ["imgOrder", "imgURL"]
+
+
+class ProductImagePatchRequestSerializer(serializers.ModelSerializer):
+    """Serializer used to update image ordering."""
+
+    imgOrder = serializers.IntegerField(source="img_order")
+
+    class Meta:
+        model = ProductImage
+        fields = ["id", "imgOrder"]
