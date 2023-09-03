@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = "ejdeelfekferkffjfgfe"
 
 DEBUG = True
 
@@ -28,8 +28,11 @@ INSTALLED_APPS = [
     "treebeard",
     "corsheaders",
     "django_filters",
+    "djoser",
     # APPS
     "core.product",
+    "profile_app",
+    "user_auth",
     # API
     "api.v1.product",
 ]
@@ -70,14 +73,13 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT"),
+        "NAME": "beauty_shop",
+        "USER": "root",
+        "PASSWORD": "root",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -118,10 +120,47 @@ STORAGES = {
     },
 }
 
+# Auth User Model
+AUTH_USER_MODEL = "user_auth.User"
+
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.ModelBackend',
+# ) 'user_auth.backends.AuthBackend',
+AUTHENTICATION_BACKENDS = (
+    "user_auth.backends.AuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+SIMPLE_JWT = {"AUTH_HEADER_TYPES": ("Bearer",)}
+
+# DJOSER
+DJOSER = {
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "SEND_ACTIVATION_EMAIL": True,
+    "SET_PASSWORD_RETYPE": True,
+    "PASSWORD_RESET_CONFIRM_RETYPE": True,
+    "TOKEN_MODEL": None,  # We use only JWT
+    "ACTIVATION_URL": "auth/verify/{uid}/{token}/",
+}
+
+# EMAIL
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "django-auth@kantegory.me"
+EMAIL_HOST_PASSWORD = "123"
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "django-auth@kantegory.me"
+
+
 # DRF
 REST_FRAMEWORK = {
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
 }
 
 # django-cors-headers
