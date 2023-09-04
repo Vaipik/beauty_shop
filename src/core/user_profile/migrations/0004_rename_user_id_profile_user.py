@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("profile_app", "0003_alter_profile_groups_alter_profile_user_permissions"),
+        ("user_profile", "0003_alter_profile_groups_alter_profile_user_permissions"),
     ]
 
     operations = [

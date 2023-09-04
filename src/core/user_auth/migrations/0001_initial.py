@@ -3,6 +3,8 @@
 from django.db import migrations, models
 import uuid
 
+from core.user_auth import managers
+
 
 class Migration(migrations.Migration):
     initial = True
@@ -96,7 +98,7 @@ class Migration(migrations.Migration):
                 "unique_together": {("username", "email", "phone")},
             },
             managers=[
-                ("objects", core.user_auth.managers.UserManager()),
+                ("objects", managers.UserManager()),
             ],
         ),
     ]
