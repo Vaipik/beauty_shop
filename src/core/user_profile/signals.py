@@ -1,6 +1,6 @@
 from django.dispatch import receiver
 from djoser.signals import user_registered
-from profile_app.models import Profile
+from core.user_profile.models import Profile
 
 
 @receiver(user_registered, dispatch_uid="create_profile")

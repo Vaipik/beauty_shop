@@ -3,7 +3,7 @@ from django.apps import AppConfig
 
 class ProfileAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "profile_app"
+    name = "core.user_profile"
 
     def ready(self):
-        from profile_app import signals
+        pass

@@ -3,7 +3,7 @@ from django.apps import AppConfig
 
 class UserAuthConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "user_auth"
+    name = "core.user_auth"
 
     def ready(self):
-        from user_auth import signals
+        pass

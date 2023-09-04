@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "ejdeelfekferkffjfgfe"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = True
 
@@ -31,8 +31,8 @@ INSTALLED_APPS = [
     "djoser",
     # APPS
     "core.product",
-    "profile_app",
-    "user_auth",
+    "core.user_profile",
+    "core.user_auth",
     # API
     "api.v1.product",
 ]
@@ -73,13 +73,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "beauty_shop",
-        "USER": "root",
-        "PASSWORD": "root",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT"),
     }
 }
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -127,7 +128,7 @@ AUTH_USER_MODEL = "user_auth.User"
 #     'django.contrib.auth.backends.ModelBackend',
 # ) 'user_auth.backends.AuthBackend',
 AUTHENTICATION_BACKENDS = (
-    "user_auth.backends.AuthBackend",
+    "core.user_auth.backends.AuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 )
 
@@ -170,12 +171,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 SPECTACULAR_SETTINGS = {
     "TITLE": "Your Project API",
     "DESCRIPTION": "Your project description",
-    "VERSION": "1.0.0",
+    "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
-
-# django-storages
-DROPBOX_ROOT_PATH = os.environ.get("DROPBOX_ROOT_PATH")
-DROPBOX_APP_KEY = os.environ.get("DROPBOX_APP_KEY")
-DROPBOX_APP_SECRET = os.environ.get("DROPBOX_APP_SECRET")
-DROPBOX_OAUTH2_REFRESH_TOKEN = os.environ.get("DROPBOX_OAUTH2_REFRESH_TOKEN")

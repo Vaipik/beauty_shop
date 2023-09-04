@@ -3,7 +3,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from user_auth.managers import UserManager
+from core.user_auth.managers import UserManager
 from core.product.models.base import Base
 
 

@@ -1,4 +1,4 @@
-from user_auth.models import User
+from core.user_auth.models import User
 from django.db.models import Q
 
 

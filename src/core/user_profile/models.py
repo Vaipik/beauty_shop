@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from core.product.models.base import Base
-from user_auth.models import User
+from core.user_auth.models import User
 from django.contrib.auth.models import PermissionsMixin, Group, Permission
 
 
