@@ -67,3 +67,6 @@ class Order(Base, TimeStampedBase):
         db_table = "orders"
         verbose_name = "Order"
         verbose_name_plural = "Orders"
+
+    def __str__(self):
+        return f"{self.last_name=} {self.first_name=} [{self.status=} {self.is_paid}]"
