@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from treebeard.mp_tree import MP_Node
 
 from core.product import constants
-from .base import Base
+from core.base.models import Base
 
 
 class ProductCategory(Base, MP_Node):
