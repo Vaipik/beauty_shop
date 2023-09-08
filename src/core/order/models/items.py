@@ -20,10 +20,13 @@ class OrderItem(Base):
         default=1,
     )
     order = models.ForeignKey(
-        to="Order", on_delete=models.SET_NULL, related_name="items"
+        to="Order",
+        on_delete=models.SET_NULL,
+        related_name="items",
+        null=True,
     )
     product = models.ForeignKey(
-        to="core.Product",
+        to="product.Product",  # app_label.ModelName
         on_delete=models.SET_NULL,
         null=True,
         related_name="order_items",

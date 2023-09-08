@@ -27,5 +27,5 @@ class OrderItemAdmin(admin.ModelAdmin):
         "order",
     )
     list_display_links = ("price", "quantity")
-    search_fields = ("product.sku", "order")
-    list_filter = ("product.sku", "order")
+    search_fields = ("product__sku", "order")
+    list_filter = ("product__sku", "order")
