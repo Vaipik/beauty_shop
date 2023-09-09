@@ -41,7 +41,7 @@ def create_child_category(name: str, parent_id: UUID) -> ProductCategory:
 
 @transaction.atomic
 def patch_category(
-    category: ProductCategory, name: str | None = None, parent_id: UUID | None = None
+    category: ProductCategory, name: str | None, parent_id: UUID | None
 ) -> QuerySet[ProductCategory]:
     """Perform a partial update of category.
 

@@ -61,7 +61,7 @@ def create_child_option(name: str, parent_id: UUID) -> ProductOption:
 
 @transaction.atomic
 def patch_option(
-    option: ProductOption, name: str | None = None, parent_id: UUID | None = None
+    option: ProductOption, name: str | None, parent_id: UUID | None
 ) -> QuerySet[ProductOption]:
     """Perform a partial update of option.
 
