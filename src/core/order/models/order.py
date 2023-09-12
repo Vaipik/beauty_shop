@@ -60,7 +60,6 @@ class Order(Base, TimeStampedBase):
         verbose_name=_("Paid"),
         default=False,
     )
-    # Will be changed
     address = models.CharField()
 
     class Meta:
