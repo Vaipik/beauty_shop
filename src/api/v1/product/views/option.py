@@ -118,10 +118,15 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
             instance, data=request.data, partial=partial
         )
         request_serializer.is_valid(raise_exception=True)
-        update_cat = services.patch_option(instance, **request.data)
+        update_option = services.patch_option(
+            option=instance,
+            name=request.data.get("name"),
+            parent_id=request.data.get("parentId"),
+            to_root=request.data.get("toRoot", False),
+        )
         if request.data.get("parentId"):
             response_serializer = ProductOptionPatchResponseSerializer(
-                update_cat, many=True
+                update_option, many=True
             )
         else:
             instance.refresh_from_db()

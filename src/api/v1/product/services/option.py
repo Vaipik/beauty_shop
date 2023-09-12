@@ -61,20 +61,28 @@ def create_child_option(name: str, parent_id: UUID) -> ProductOption:
 
 @transaction.atomic
 def patch_option(
-    option: ProductOption, name: str | None = None, parent_id: UUID | None = None
+    option: ProductOption,
+    name: str | None,
+    parent_id: UUID | None,
+    to_root: bool,
 ) -> QuerySet[ProductOption]:
     """Perform a partial update of option.
 
     Change a name of a option if it was given and(or) move option to parent node
     if it was given.
     """
+    _change_option_name(option, name)
+
+    if to_root:
+        root = option.get_root()
+        option.move(root)
+        return ProductOption.get_root_nodes()
+
     if parent_id is not None:
         parent_node = ProductOption.objects.get(pk=parent_id)
         option.move(parent_node, pos="sorted-child")
         return ProductOption.get_root_nodes()
-    if name is not None:
-        option.name = name
-        option.save()
+
     return ProductOption.get_tree(option)
 
 
@@ -82,3 +90,11 @@ def patch_option(
 def delete_option(option: ProductOption) -> None:
     """Delete an option and it descendants from db."""
     option.delete()
+
+
+def _change_option_name(option: ProductOption, name: str | None) -> None:
+    """If name was provided and it is not equal to current name it will be updated."""
+    if name:
+        if option.name != name:
+            option.name = name
+            option.save()

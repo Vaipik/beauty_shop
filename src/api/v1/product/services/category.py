@@ -41,20 +41,28 @@ def create_child_category(name: str, parent_id: UUID) -> ProductCategory:
 
 @transaction.atomic
 def patch_category(
-    category: ProductCategory, name: str | None = None, parent_id: UUID | None = None
+    category: ProductCategory,
+    name: str | None,
+    parent_id: UUID | None,
+    to_root: bool,
 ) -> QuerySet[ProductCategory]:
     """Perform a partial update of category.
 
     Change a name of a category if it was given and(or) move category to parent node
     if it was given.
     """
+    _change_category_name(category, name)
+
+    if to_root:
+        root = category.get_root()
+        category.move(root)
+        return ProductCategory.get_root_nodes()
+
     if parent_id is not None:
         parent_node = ProductCategory.objects.get(pk=parent_id)
         category.move(parent_node, pos="sorted-child")
         return ProductCategory.get_root_nodes()
-    if name is not None:
-        category.name = name
-        category.save()
+
     return ProductCategory.get_tree(category)
 
 
@@ -62,3 +70,11 @@ def patch_category(
 def delete_category(category: ProductCategory) -> None:
     """Delete a category and it descendants from db."""
     category.delete()
+
+
+def _change_category_name(category: ProductCategory, name: str | None) -> None:
+    """If name was provided and it is not equal to current name it will be updated."""
+    if name:
+        if category.name != name:
+            category.name = name
+            category.save()
