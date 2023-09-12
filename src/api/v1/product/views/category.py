@@ -118,8 +118,9 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
             category=instance,
             name=request.data.get("name"),
             parent_id=request.data.get("parentId"),
+            to_root=request.data.get("toRoot", False),
         )
-        if request.data.get("parentId"):
+        if request.data.get("parentId") or request.data.get("toRoot"):
             response_serializer = ProductCategoryPatchResponseSerializer(
                 update_cat, many=True
             )
