@@ -1,4 +1,4 @@
-from .order import OrderCreateSerializer
+from .order import OrderSerializer
 
 
-__all__ = ["OrderCreateSerializer"]
+__all__ = ["OrderSerializer"]

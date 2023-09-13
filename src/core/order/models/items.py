@@ -41,6 +41,6 @@ class OrderItem(Base):
         return f"{self.product} [{self.price=}, {self.quantity=}]"
 
     @property
-    def items_cost(self) -> decimal.Decimal:
+    def cost(self) -> decimal.Decimal:
         """Total price for item according to its quantity."""
         return self.quantity * self.price
