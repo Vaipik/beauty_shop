@@ -37,10 +37,11 @@ class Order(Base, TimeStampedBase):
     email = models.EmailField(
         max_length=255,
         verbose_name=_("Email address"),
+        blank=True,
         null=True,
     )
     phone = models.CharField(
-        max_length=12,  # 380931234567
+        max_length=10,  # 01234567890
         verbose_name=_("Mobile phone"),
         null=False,
     )
