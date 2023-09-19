@@ -30,8 +30,10 @@ INSTALLED_APPS = [
     "django_filters",
     # APPS
     "core.product",
+    "core.order",
     # API
     "api.v1.product",
+    "api.v1.order",
 ]
 
 MIDDLEWARE = [

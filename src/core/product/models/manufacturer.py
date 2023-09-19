@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.product import constants
-from .base import Base
+from core.base.models import Base
 
 
 class ProductManufacturer(Base):

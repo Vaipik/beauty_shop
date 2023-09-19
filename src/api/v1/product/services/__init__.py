@@ -2,7 +2,7 @@ from .category import (
     get_categories_binded_to_products,
     create_root_category,
     create_child_category,
-    patch_category,
+    update_category,
     delete_category,
 )
 from .option import (
@@ -10,7 +10,7 @@ from .option import (
     get_product_options_in_category,
     create_child_option,
     create_root_option,
-    patch_option,
+    update_option,
     delete_option,
 )
 
@@ -22,7 +22,7 @@ from .product import (
     get_product_options,
     get_products_for_category,
     get_products_by_manufacturer,
-    patch_product,
+    update_product,
     delete_product,
 )
 
@@ -41,9 +41,9 @@ __all__ = [
     "get_product_options",
     "get_products_for_category",
     "get_product_options_in_category",
-    "patch_category",
-    "patch_option",
-    "patch_product",
+    "update_category",
+    "update_option",
+    "update_product",
     "delete_category",
     "delete_option",
     "delete_product",

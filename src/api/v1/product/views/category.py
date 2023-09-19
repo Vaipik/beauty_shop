@@ -105,7 +105,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         " parent id empty, if you want to move option provide parent id.",
         request=ProductCategoryPartialUpdateRequestSerializer,
         responses=ProductCategoryPatchResponseSerializer,
-        examples=swagger_examples.patch_tree_example(),
+        examples=swagger_examples.update_tree_example(),
     )
     def partial_update(self, request, *args, **kwargs):
         """PATCH for the category. Can be removed to another parent or renamed."""
@@ -114,7 +114,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
             instance, data=request.data, partial=True
         )
         request_serializer.is_valid(raise_exception=True)
-        update_cat = services.patch_category(
+        update_cat = services.update_category(
             category=instance,
             name=request.data.get("name"),
             parent_id=request.data.get("parentId"),
