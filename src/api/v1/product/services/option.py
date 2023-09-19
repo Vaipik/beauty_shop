@@ -60,7 +60,7 @@ def create_child_option(name: str, parent_id: UUID) -> ProductOption:
 
 
 @transaction.atomic
-def patch_option(
+def update_option(
     option: ProductOption,
     name: str | None,
     parent_id: UUID | None,
