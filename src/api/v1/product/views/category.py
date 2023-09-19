@@ -114,8 +114,13 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
             instance, data=request.data, partial=True
         )
         request_serializer.is_valid(raise_exception=True)
-        update_cat = services.update_category(instance, **request.data)
-        if request.data.get("parentId"):
+        update_cat = services.update_category(
+            category=instance,
+            name=request.data.get("name"),
+            parent_id=request.data.get("parentId"),
+            to_root=request.data.get("toRoot", False),
+        )
+        if request.data.get("parentId") or request.data.get("toRoot"):
             response_serializer = ProductCategoryPatchResponseSerializer(
                 update_cat, many=True
             )

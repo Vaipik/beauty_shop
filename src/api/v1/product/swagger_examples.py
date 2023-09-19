@@ -75,8 +75,47 @@ def update_tree_example():
     """Response for PATCHed MP tree."""
     return [
         OpenApiExample(
-            "New parent id",
-            summary="Response with changed parent id",
+            name="Move to root",
+            summary="Move node to root",
+            description="Moves node and it nested nodes to root.",
+            value=[
+                {
+                    "name": "You can change name if u want.",
+                    "parentId": "You can leave this field as null or not provide.",
+                    "toRoot": True,
+                }
+            ],
+            request_only=True,
+        ),
+        OpenApiExample(
+            name="Move to another parent node",
+            summary="Move to another parent",
+            description="Moves node and it nested nodes to another parent.",
+            value=[
+                {
+                    "name": "You can change name if u want.",
+                    "parentId": "ID of new parent.",
+                    "toRoot": "You can leave this field as false or not provide.",
+                }
+            ],
+            request_only=True,
+        ),
+        OpenApiExample(
+            name="Change name",
+            summary="Change node name",
+            description="Change node name ",
+            value=[
+                {
+                    "name": "New node name",
+                    "parentId": "You can leave this field as null or not provide.",
+                    "toRoot": "You can leave this field as false or not provide.",
+                }
+            ],
+            request_only=True,
+        ),
+        OpenApiExample(
+            "Response when moved to root or another parent",
+            summary="Node was moved",
             description="Return whole tree with changed node",
             value=[
                 {
@@ -114,6 +153,7 @@ def update_tree_example():
                     ],
                 },
             ],
+            response_only=True,
         ),
         OpenApiExample(
             "New name",
@@ -136,5 +176,6 @@ def update_tree_example():
                     }
                 ],
             },
+            response_only=True,
         ),
     ]
