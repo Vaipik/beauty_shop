@@ -15,11 +15,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
     firstName = serializers.CharField(source="first_name")
     lastName = serializers.CharField(source="last_name")
-    isPaid = serializers.BooleanField(source="is_paid", read_only=True)
-    userId = serializers.PrimaryKeyRelatedField(
-        source="user_id", queryset=User.objects.all()
-    )
-    items = OrderItemSerializer(many=True, read_only=False)
+    isPaid = serializers.BooleanField(source="is_paid")
+    userId = serializers.IntegerField(source="user_id")
+    items = OrderItemSerializer(many=True)
 
     class Meta:
         model = Order
@@ -31,6 +29,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "phone",
             "status",
             "isPaid",
+            "address",
             "userId",
             "items",
         ]
@@ -44,14 +43,18 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def validate_phone(self, phone: str) -> str:
         """Perfrom a validation using regex. Raise error if it is not valid."""
-        if len(phone) != 10:
-            raise serializers.ValidationError(
-                detail="Must be 10 digits.",
-                code=status.HTTP_400_BAD_REQUEST,
-            )
         if not is_phone_number_valid(phone):
             raise serializers.ValidationError(
                 detail="Must be valid mobile number.",
                 code=status.HTTP_400_BAD_REQUEST,
             )
         return phone
+
+
+class OrderUpdateSerializer(OrderSerializer):
+    """Serializer for update. RO fields is only Order ID."""
+
+    items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta(OrderSerializer.Meta):
+        read_only_fields = ["id"]
