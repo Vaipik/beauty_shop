@@ -107,7 +107,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         " parent id empty, if you want to move category provide parent id.",
         request=ProductOptionPartialUpdateRequestSerializer,
         responses=ProductOptionPatchResponseSerializer,
-        examples=swagger_examples.patch_tree_example(),
+        examples=swagger_examples.update_tree_example(),
     )
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
@@ -118,7 +118,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
             instance, data=request.data, partial=partial
         )
         request_serializer.is_valid(raise_exception=True)
-        update_cat = services.patch_option(instance, **request.data)
+        update_cat = services.update_option(instance, **request.data)
         if request.data.get("parentId"):
             response_serializer = ProductOptionPatchResponseSerializer(
                 update_cat, many=True

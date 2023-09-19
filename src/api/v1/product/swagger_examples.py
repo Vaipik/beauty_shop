@@ -71,7 +71,7 @@ def get_created_tree_examples():
     ]
 
 
-def patch_tree_example():
+def update_tree_example():
     """Response for PATCHed MP tree."""
     return [
         OpenApiExample(

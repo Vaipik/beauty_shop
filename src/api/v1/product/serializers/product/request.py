@@ -37,7 +37,7 @@ class ProductPatchRequestSerializer(serializers.ModelSerializer):
         new_images = request.FILES.getlist("images")
         if not new_images:
             self.validate_old_images(old_images)
-        updated_product = services.patch_product(instance, validated_data, new_images)
+        updated_product = services.update_product(instance, validated_data, new_images)
         return updated_product
 
     def validate_old_images(self, old_images: dict) -> None:

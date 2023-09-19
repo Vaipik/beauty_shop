@@ -91,7 +91,7 @@ def create_product(validated_data: dict, images: Collection) -> Product:
 
 
 @transaction.atomic
-def patch_product(
+def update_product(
     product: Product, validated_data: dict, images: Collection
 ) -> Product:
     """Perform a data update for product in database.
