@@ -17,7 +17,7 @@ class ProductImage(Base, TimeStampedBase):
         to="product.Product",
         on_delete=models.CASCADE,
         related_name="images",
-        null=False,
+        null=True,
     )
 
     class Meta:
