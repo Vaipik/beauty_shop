@@ -24,21 +24,19 @@ from .option import (
 from .product import (
     ProductDetailResponseSerializer,
     ProductListResponseSerializer,
-    ProductCreateRequestSerializer,
+    ProductSerializer,
     ProductFullResponseSerializer,
-    ProductPatchRequestSerializer,
 )
 
 __all__ = [
     # Request
     "ProductCategoryCreateRequestSeriliazer",
-    "ProductCreateRequestSerializer",
+    "ProductSerializer",
     "ProductImageCreateRequestSerializer",
     "ProductManufacturerCreateRequestSerializer",
     "ProductOptionCreateRequestSeriliazer",
     "ProductCategoryPartialUpdateRequestSerializer",
     "ProductOptionPartialUpdateRequestSerializer",
-    "ProductPatchRequestSerializer",
     "ProductImagePatchRequestSerializer",
     # Response
     "ProductCategoryCreateResponseSeriliazer",

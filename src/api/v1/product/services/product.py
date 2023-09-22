@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 from django.db.models.query import RawQuerySet, Prefetch
 
 from core.product.models import Product, ProductOption, ProductImage
-from .image import create_images, create_images_with_existing_images
+from .image import create_images
 
 
 def get_list_products() -> QuerySet[Product]:
@@ -104,21 +104,20 @@ def update_product(
     manufacturer = validated_data.pop("manufacturer")
     categories = validated_data.pop("categories")
     options = validated_data.pop("options")
+
     if categories:
         product.categories.add(*categories)
+
     if options:
         product.options.add(*options)
+
     if manufacturer:
         product.manufacturer = manufacturer
-    old_images = validated_data.pop("images")
-    img_ordering = []
+
     product.images.update(img_order=None)
-    for image in old_images:
+    for image in images:
         img_order = image["img_order"]
         product.images.filter(id=image["id"]).update(img_order=img_order)
-        img_ordering.append(img_order)
-    if images:
-        create_images_with_existing_images(images, product, img_ordering)
 
     return product
 

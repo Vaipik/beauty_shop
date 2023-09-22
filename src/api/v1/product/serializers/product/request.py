@@ -5,45 +5,33 @@ from api.v1.product import services
 from api.v1.product.serializers.image.request import ProductImagePatchRequestSerializer
 
 
-class ProductCreateRequestSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     """Serializer to create a new product with nested images, options and cats."""
+
+    images = ProductImagePatchRequestSerializer(many=True, read_only=False)
 
     class Meta:
         model = Product
-        exclude = ["id"]
+        fields = "__all__"
+        read_only_fields = ["id"]
 
     def create(self, validated_data) -> Product:
         """To create a product instance with nested serializers."""
-        request = self.context.get("request")
-        images = request.FILES.getlist("images")
-        if not images:
-            raise serializers.ValidationError("You need to upload images.")
+        images = validated_data.pop("images")
         return services.create_product(validated_data, images)
 
+    def update(self, instance, validated_data):
+        """Update product."""
+        images = validated_data.pop("images")
+        return services.update_product(instance, validated_data, images)
 
-class ProductPatchRequestSerializer(serializers.ModelSerializer):
-    """Serializer for updating product data."""
-
-    oldImages = ProductImagePatchRequestSerializer(many=True, source="images")
-
-    class Meta:
-        model = Product
-        exclude = ["id"]
-
-    def update(self, instance, validated_data) -> Product:
-        """Update images using json data of existing images and save new via form."""
-        request = self.context.get("request")
-        old_images = validated_data["images"]
-        new_images = request.FILES.getlist("images")
-        if not new_images:
-            self.validate_old_images(old_images)
-        updated_product = services.update_product(instance, validated_data, new_images)
-        return updated_product
-
-    def validate_old_images(self, old_images: dict) -> None:
+    def validate_images(self, images: dict) -> dict | None:
         """If user didn't upload new images performs a rearrange of existing images."""
-        for idx, image in enumerate(
-            sorted(old_images, key=lambda x: x["img_order"]), 1
-        ):
+        if not images:
+            raise serializers.ValidationError("You need to upload images.")
+
+        for idx, image in enumerate(sorted(images, key=lambda x: x["img_order"]), 1):
             if idx != image["img_order"]:
                 raise serializers.ValidationError("Image ordering must be consequent")
+
+        return images

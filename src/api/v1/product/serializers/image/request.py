@@ -17,8 +17,10 @@ class ProductImageCreateRequestSerializer(serializers.ModelSerializer):
 class ProductImagePatchRequestSerializer(serializers.ModelSerializer):
     """Serializer used to update image ordering."""
 
-    imgOrder = serializers.IntegerField(source="img_order")
+    id = serializers.UUIDField()
+    order = serializers.IntegerField(source="img_order")
+    url = serializers.ImageField(source="img_path", use_url=True, read_only=True)
 
     class Meta:
         model = ProductImage
-        fields = ["id", "imgOrder"]
+        fields = ["id", "order", "url"]
