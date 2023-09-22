@@ -12,7 +12,7 @@ from core.product.models import ProductImage
 class ProductImageViewSet(viewsets.ModelViewSet):
     """Endpoints for operations with images."""
 
-    http_method_names = ["get", "post", "patch", "delete"]
+    http_method_names = ["get", "post"]
     queryset = ProductImage.objects.all()
     parser_classes = [parsers.JSONParser, parsers.MultiPartParser]
 
