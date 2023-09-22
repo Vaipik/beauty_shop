@@ -6,9 +6,7 @@ from api.v1.product.filters import ProductFilter
 from api.v1.product.serializers import (
     ProductDetailResponseSerializer,
     ProductListResponseSerializer,
-    ProductCreateRequestSerializer,
-    ProductFullResponseSerializer,
-    ProductPatchRequestSerializer,
+    ProductSerializer,
 )
 from api.v1.product import services
 
@@ -25,10 +23,8 @@ class ProductViewSet(viewsets.ModelViewSet):
             return ProductListResponseSerializer
         if self.action == "retrieve":
             return ProductDetailResponseSerializer
-        if self.action == "create":
-            return ProductCreateRequestSerializer
-        if self.action == "partial_update":
-            return ProductPatchRequestSerializer
+        if self.action in {"create", "partial_update"}:
+            return ProductSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):
@@ -51,8 +47,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         return super().list(request)
 
     @extend_schema(
-        request=ProductCreateRequestSerializer,
-        responses=ProductFullResponseSerializer,
+        description="Endpoint to create a new product. Please note that image ordering"
+        " must starts with 1 and be consequent, otherwise you will be obtain"
+        " an error."
     )
     def create(self, request, *args, **kwargs):  # noqa D102
         return super().create(request, *args, **kwargs)
@@ -65,21 +62,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         return super().retrieve(request, pk)
 
     @extend_schema(
-        description="Perform an update for product. If you want to add new images"
-        "than leave id field empty or null.",
-        request=ProductPatchRequestSerializer,
-        responses=ProductDetailResponseSerializer,
+        description="Endpoint to update a product. Please note that image ordering"
+        " must starts with 1 and be consequent, otherwise you will be obtain"
+        " an error."
     )
-    def partial_update(self, request, *args, **kwargs):
-        """PATCH for the product."""
-        instance = self.get_queryset().all()[0]  # noqa only this works with filters
-        request_serializer = self.get_serializer(
-            instance, data=request.data, partial=True
-        )
-        request_serializer.is_valid(raise_exception=True)
-        updated_product = request_serializer.save()
-        response_serializer = ProductDetailResponseSerializer(updated_product)
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
+    def partial_update(self, request, *args, **kwargs):  # noqa D102
+        return super().partial_update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """Delete product and images."""
