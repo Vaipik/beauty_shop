@@ -9,8 +9,7 @@ from core.product.models import ProductManufacturer
 
 from api.v1.product import services
 from api.v1.product.serializers import (
-    ProductManufacturerResponseSerializer,
-    ProductManufacturerCreateRequestSerializer,
+    ProductManufacturerSerializer,
     ProductListResponseSerializer,
 )
 
@@ -18,7 +17,7 @@ from api.v1.product.serializers import (
 class ProductManufacturerViewSet(viewsets.ModelViewSet):
     """Viewset for ProductManufacturer."""
 
-    serializer_class = ProductManufacturerResponseSerializer
+    serializer_class = ProductManufacturerSerializer
     queryset = ProductManufacturer.objects.all()
     http_method_names = ["get", "post", "patch", "delete"]
 
@@ -27,17 +26,10 @@ class ProductManufacturerViewSet(viewsets.ModelViewSet):
             return services.get_products_by_manufacturer(self.kwargs["pk"])
         return super().get_queryset()
 
-    def get_serializer_class(self):  # noqa D102
-        if self.action == "products":
-            return ProductListResponseSerializer
-        return super().get_serializer_class()
-
     @extend_schema(
         description="This endpoint is used to create manufacturer. If you want to "
         "create manufacturer without description you don't need to pass a description,"
         " leave it NULL. ",
-        request=ProductManufacturerCreateRequestSerializer,
-        responses=ProductManufacturerResponseSerializer,
     )
     def create(self, request, *args, **kwargs):
         """Create manufacturer."""

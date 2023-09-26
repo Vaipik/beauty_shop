@@ -4,7 +4,6 @@ from rest_framework.response import Response
 
 from api.v1.product.filters import ProductFilter
 from api.v1.product.serializers import (
-    ProductDetailResponseSerializer,
     ProductListResponseSerializer,
     ProductSerializer,
 )
@@ -21,9 +20,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         """Different endpoints require different serializers."""
         if self.action == "list":
             return ProductListResponseSerializer
-        if self.action == "retrieve":
-            return ProductDetailResponseSerializer
-        if self.action in {"create", "partial_update"}:
+        if self.action in {"create", "retrieve", "partial_update"}:
             return ProductSerializer
         return super().get_serializer_class()
 
@@ -56,7 +53,6 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         description="Endpoint that returns a detail information about product for user",
-        responses=ProductDetailResponseSerializer,
     )
     def retrieve(self, request, pk=None):  # noqa D102
         return super().retrieve(request, pk)

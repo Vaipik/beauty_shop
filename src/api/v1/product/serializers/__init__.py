@@ -1,53 +1,36 @@
-from .category import (
-    ProductCategoryListResponseSerializer,
-    ProductCategoryCreateRequestSeriliazer,
-    ProductCategoryCreateResponseSeriliazer,
-    ProductCategoryPartialUpdateRequestSerializer,
-    ProductCategoryPatchResponseSerializer,
-)
+from .category import ProductCategoryCreateResponseSeriliazer
+from .common import TreeListResponseSerializer, TreeCreateUpdateSerializer
 from .image import (
-    ProductImageListResponseSerializer,
     ProductImageCreateRequestSerializer,
-    ProductImagePatchRequestSerializer,
+    ProductImageSerializer,
+    ProductImageCreateResponseSerializer,
+    ProductImageListSerializer,
 )
-from .manufacturer import (
-    ProductManufacturerResponseSerializer,
-    ProductManufacturerCreateRequestSerializer,
-)
-from .option import (
-    ProductOptionCreateRequestSeriliazer,
-    ProductOptionCreateResponseSeriliazer,
-    ProductOptionListResponseSerializer,
-    ProductOptionPartialUpdateRequestSerializer,
-    ProductOptionPatchResponseSerializer,
-)
+from .manufacturer import ProductManufacturerSerializer
+from .option import ProductOptionCreateResponseSeriliazer
 from .product import (
     ProductDetailResponseSerializer,
     ProductListResponseSerializer,
     ProductSerializer,
-    ProductFullResponseSerializer,
 )
 
 __all__ = [
-    # Request
-    "ProductCategoryCreateRequestSeriliazer",
-    "ProductSerializer",
-    "ProductImageCreateRequestSerializer",
-    "ProductManufacturerCreateRequestSerializer",
-    "ProductOptionCreateRequestSeriliazer",
-    "ProductCategoryPartialUpdateRequestSerializer",
-    "ProductOptionPartialUpdateRequestSerializer",
-    "ProductImagePatchRequestSerializer",
-    # Response
+    # common
+    "TreeCreateUpdateSerializer",
+    "TreeListResponseSerializer",
+    # category
     "ProductCategoryCreateResponseSeriliazer",
-    "ProductDetailResponseSerializer",
+    # image
+    "ProductImageCreateRequestSerializer",
+    "ProductImageCreateResponseSerializer",
+    "ProductImageSerializer",
+    "ProductImageListSerializer",
+    # manufacturer
+    "ProductManufacturerSerializer",
+    # option
     "ProductOptionCreateResponseSeriliazer",
-    "ProductManufacturerResponseSerializer",
+    # product
+    "ProductSerializer",
+    "ProductDetailResponseSerializer",
     "ProductListResponseSerializer",
-    "ProductImageListResponseSerializer",
-    "ProductCategoryListResponseSerializer",
-    "ProductOptionListResponseSerializer",
-    "ProductFullResponseSerializer",
-    "ProductCategoryPatchResponseSerializer",
-    "ProductOptionPatchResponseSerializer",
 ]
