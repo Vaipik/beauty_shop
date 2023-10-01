@@ -9,11 +9,19 @@ from api.v1.product.serializers.manufacturer import ProductManufacturerSerialize
 from core.product.models import Product
 
 
+class ProductSiblingsSerializer(serializers.Serializer):
+    """Used to connect products with m2m to themselves."""
+
+    id = serializers.UUIDField()
+    name = serializers.CharField(read_only=True)
+
+
 class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
     """Serializer to create a new product with nested images, options and cats."""
 
-    images = ProductImageSerializer(many=True, read_only=False)
+    images = ProductImageSerializer(many=True, read_only=False, allow_null=True)
     isLuxury = serializers.BooleanField(source="is_luxury")
+    siblings = ProductSiblingsSerializer(many=True)
 
     class Meta:
         model = Product
@@ -23,12 +31,14 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
     def create(self, validated_data) -> Product:
         """To create a product instance with nested serializers."""
         images = validated_data.pop("images")
-        return services.create_product(validated_data, images)
+        siblings = validated_data.pop("siblings")
+        return services.create_product(validated_data, images, siblings)
 
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data) -> Product:
         """Update product."""
         images = validated_data.pop("images")
-        return services.update_product(instance, validated_data, images)
+        siblings = validated_data.pop("siblings")
+        return services.update_product(instance, validated_data, images, siblings)
 
     def validate_images(self, images: dict) -> dict | None:
         """If user didn't upload new images performs a rearrange of existing images."""

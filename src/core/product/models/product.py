@@ -71,6 +71,11 @@ class Product(Base, TimeStampedBase):
         db_table="product_options_m2m",
         blank=True,
     )
+    siblings = models.ManyToManyField(
+        to="self",
+        related_name="sibling",
+        symmetrical=False,
+    )
 
     class Meta:
         db_table = "products"
