@@ -2,9 +2,10 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, parsers, status
 from rest_framework.response import Response
 
-from api.v1.product.serializers import ProductImageCreateRequestSerializer
-from api.v1.product.serializers.image.response import (
+from api.v1.product.serializers import (
+    ProductImageCreateRequestSerializer,
     ProductImageCreateResponseSerializer,
+    ProductImageListSerializer,
 )
 from core.product.models import ProductImage
 
@@ -12,13 +13,15 @@ from core.product.models import ProductImage
 class ProductImageViewSet(viewsets.ModelViewSet):
     """Endpoints for operations with images."""
 
-    http_method_names = ["get", "post"]
+    http_method_names = ["get", "post", "delete"]
     queryset = ProductImage.objects.all()
     parser_classes = [parsers.JSONParser, parsers.MultiPartParser]
 
     def get_serializer_class(self):  # noqa D102
         if self.action == "create":
             return ProductImageCreateRequestSerializer
+        if self.action in {"retrieve", "list"}:
+            return ProductImageListSerializer
         return super().get_serializer_class()
 
     @extend_schema(

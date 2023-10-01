@@ -25,6 +25,27 @@ def get_options_binded_to_products():
     return raw_queryset
 
 
+def get_options_binded_to_category(category_id: UUID):
+    """Raw sql to obtain options that are binded in a category as k-v."""
+    query = """
+        SELECT parent.id,
+           parent.name,
+           jsonb_agg(
+                   jsonb_build_object('id', child.id, 'name', child.name)
+               ) AS children
+    FROM product_options AS parent
+             LEFT JOIN product_options AS child
+                       ON child.path SIMILAR TO CONCAT(parent.path, '____')
+             LEFT JOIN category_options_m2m as m2m ON
+        child.id = m2m.productoption_id
+    WHERE productcategory_id = %s
+    GROUP BY parent.id, parent.name
+    """
+
+    raw_queryset = ProductOption.objects.raw(query, (category_id,))
+    return raw_queryset
+
+
 def get_product_options_in_category(category_id: UUID):
     """Get all options for products that are presented in given category."""
     query = """
