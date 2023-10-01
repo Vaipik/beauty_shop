@@ -7,7 +7,7 @@ from .image import (
     ProductImageListSerializer,
 )
 from .manufacturer import ProductManufacturerSerializer
-from .option import ProductOptionCreateResponseSeriliazer
+from .option import ProductOptionCreateResponseSeriliazer, ProductOptionBindedSerializer
 from .product import (
     ProductDetailResponseSerializer,
     ProductListResponseSerializer,
@@ -29,6 +29,7 @@ __all__ = [
     "ProductManufacturerSerializer",
     # option
     "ProductOptionCreateResponseSeriliazer",
+    "ProductOptionBindedSerializer",
     # product
     "ProductSerializer",
     "ProductDetailResponseSerializer",

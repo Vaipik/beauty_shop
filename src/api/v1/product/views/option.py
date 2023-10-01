@@ -125,6 +125,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         if request.data.get("parentId") or request.data.get("toRoot"):
             response_serializer = TreeListResponseSerializer(update_option, many=True)
         else:
+            # if only name was changed -> not neccessary to return whole tree.
             instance.refresh_from_db()
             response_serializer = TreeListResponseSerializer(instance)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
