@@ -1,4 +1,6 @@
 from .category import (
+    bind_option_to_category,
+    remove_option_from_category,
     get_categories_binded_to_products,
     create_root_category,
     create_child_category,
@@ -7,6 +9,7 @@ from .category import (
 )
 from .option import (
     get_options_binded_to_products,
+    get_options_binded_to_category,
     get_product_options_in_category,
     create_child_option,
     create_root_option,
@@ -20,6 +23,7 @@ from .product import (
     get_detail_product,
     get_product_image_url,
     get_product_options,
+    get_product_siblings,
     get_products_for_category,
     get_products_by_manufacturer,
     update_product,
@@ -27,6 +31,7 @@ from .product import (
 )
 
 __all__ = [
+    "bind_option_to_category",
     "create_root_category",
     "create_child_category",
     "create_root_option",
@@ -35,9 +40,11 @@ __all__ = [
     "get_list_products",
     "get_detail_product",
     "get_product_image_url",
+    "get_product_siblings",
     "get_products_by_manufacturer",
     "get_categories_binded_to_products",
     "get_options_binded_to_products",
+    "get_options_binded_to_category",
     "get_product_options",
     "get_products_for_category",
     "get_product_options_in_category",
@@ -47,4 +54,5 @@ __all__ = [
     "delete_category",
     "delete_option",
     "delete_product",
+    "remove_option_from_category",
 ]

@@ -14,6 +14,12 @@ class ProductCategory(Base, MP_Node):
         max_length=constants.PRODUCT_CATEGORY_NAME_MAX_LENGTH,
     )
     node_order_by = ["name"]
+    options = models.ManyToManyField(
+        to="product.ProductOption",
+        related_name="categories",
+        db_table="category_options_m2m",
+        blank=True,
+    )
 
     class Meta:
         db_table = "product_categories"

@@ -7,11 +7,9 @@ from core.product.models import ProductOption
 from api.v1.product import services
 from api.v1.product import swagger_examples
 from api.v1.product.serializers import (
-    ProductOptionListResponseSerializer,
-    ProductOptionCreateRequestSeriliazer,
     ProductOptionCreateResponseSeriliazer,
-    ProductOptionPartialUpdateRequestSerializer,
-    ProductOptionPatchResponseSerializer,
+    TreeCreateUpdateSerializer,
+    TreeListResponseSerializer,
 )
 
 
@@ -27,15 +25,15 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             node = ProductOption.objects.get(pk=self.kwargs["pk"])
             return ProductOption.get_tree(node)
+        if self.action in {"partial_update", "destroy"}:
+            return ProductOption.objects.get(pk=self.kwargs["pk"])
         return super().get_queryset()
 
     def get_serializer_class(self):  # noqa D102
         if self.action == "list":
-            return ProductOptionListResponseSerializer
-        if self.action == "create":
-            return ProductOptionCreateRequestSeriliazer
-        if self.action == "partial_update":
-            return ProductOptionPartialUpdateRequestSerializer
+            return TreeListResponseSerializer
+        if self.action in {"create", "partial_update"}:
+            return TreeCreateUpdateSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -44,7 +42,7 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         "don't need to pass a parentId, leave it NULL. If you want to"
         "create a suboption than you need to provide a parentId of option"
         "and provide a name for suboption.",
-        request=ProductOptionCreateRequestSeriliazer,
+        request=TreeCreateUpdateSerializer,
         responses=ProductOptionCreateResponseSeriliazer,
         examples=[
             OpenApiExample(
@@ -105,8 +103,8 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
         " E.g change category name or move it to another parent category"
         " with all its children. If you want only to change name leave"
         " parent id empty, if you want to move category provide parent id.",
-        request=ProductOptionPartialUpdateRequestSerializer,
-        responses=ProductOptionPatchResponseSerializer,
+        request=TreeCreateUpdateSerializer,
+        responses=TreeListResponseSerializer,
         examples=swagger_examples.update_tree_example(),
     )
     @transaction.atomic
@@ -125,12 +123,11 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
             to_root=request.data.get("toRoot", False),
         )
         if request.data.get("parentId") or request.data.get("toRoot"):
-            response_serializer = ProductOptionPatchResponseSerializer(
-                update_option, many=True
-            )
+            response_serializer = TreeListResponseSerializer(update_option, many=True)
         else:
+            # if only name was changed -> not neccessary to return whole tree.
             instance.refresh_from_db()
-            response_serializer = ProductOptionPatchResponseSerializer(instance)
+            response_serializer = TreeListResponseSerializer(instance)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):

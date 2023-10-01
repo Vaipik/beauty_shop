@@ -6,23 +6,21 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core.product.models import ProductCategory
+from api.v1.product import services
 from api.v1.product import swagger_examples
 from api.v1.product.serializers import (
-    ProductCategoryCreateRequestSeriliazer,
     ProductCategoryCreateResponseSeriliazer,
-    ProductCategoryListResponseSerializer,
-    ProductOptionListResponseSerializer,
     ProductListResponseSerializer,
-    ProductCategoryPartialUpdateRequestSerializer,
-    ProductCategoryPatchResponseSerializer,
+    TreeCreateUpdateSerializer,
+    TreeListResponseSerializer,
+    ProductOptionBindedSerializer,
 )
-from api.v1.product import services
+from api.v1.product.serializers.common import ProductCategorySerializer
 
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     """Viewset for categories that are binded for products."""
 
-    serializer_class = ProductCategoryListResponseSerializer
     http_method_names = ["get", "post", "patch", "delete"]
 
     def get_queryset(self):
@@ -32,24 +30,22 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             node = ProductCategory.objects.get(pk=self.kwargs["pk"])
             return ProductCategory.get_tree(node)
-        if self.action == "partial_update":
-            return ProductCategory.objects.get(pk=self.kwargs["pk"])
-        if self.action == "destroy":
+        if self.action in {"partial_update", "destroy", "bind_options_delete"}:
             return ProductCategory.objects.get(pk=self.kwargs["pk"])
         if self.action == "products":
             return services.get_products_for_category(self.kwargs["pk"])
         if self.action == "options":
             return services.get_product_options_in_category(self.kwargs["pk"])
+        if self.action == "bind_options":
+            return services.get_options_binded_to_category(self.kwargs["pk"])
         return super().get_queryset()
 
     def get_serializer_class(self):
         """Choose serializer for input data."""
-        if self.action == "create":
-            return ProductCategoryCreateRequestSeriliazer
-        if self.action == "partial_update":
-            return ProductCategoryPartialUpdateRequestSerializer
+        if self.action in {"create", "partial_update"}:
+            return TreeCreateUpdateSerializer
         if self.action == "list":
-            return ProductCategoryListResponseSerializer
+            return TreeListResponseSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -58,7 +54,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         "don't need to pass a parentId, leave it NULL. If you want to"
         "create a subcategory than you need to provide a parentId of category"
         "and provide a name for subcategory.",
-        request=ProductCategoryCreateRequestSeriliazer,
+        request=TreeCreateUpdateSerializer,
         responses=ProductCategoryCreateResponseSeriliazer,
         examples=swagger_examples.get_created_tree_examples(),
     )
@@ -85,7 +81,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         description="Provide all categories that are presented."
         "Note that depth are not limited.",
         examples=swagger_examples.get_nested_examples(),
-        responses=ProductCategoryListResponseSerializer,
+        responses=TreeListResponseSerializer(many=True),
     )
     def list(self, request, *args, **kwargs):  # noqa D102
         return super().list(request, *args, **kwargs)
@@ -103,8 +99,8 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         " E.g change option name or move it to another parent option"
         " with all its children. If you want only to change name leave"
         " parent id empty, if you want to move option provide parent id.",
-        request=ProductCategoryPartialUpdateRequestSerializer,
-        responses=ProductCategoryPatchResponseSerializer,
+        request=TreeCreateUpdateSerializer,
+        responses=TreeListResponseSerializer,
         examples=swagger_examples.update_tree_example(),
     )
     def partial_update(self, request, *args, **kwargs):
@@ -121,12 +117,10 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
             to_root=request.data.get("toRoot", False),
         )
         if request.data.get("parentId") or request.data.get("toRoot"):
-            response_serializer = ProductCategoryPatchResponseSerializer(
-                update_cat, many=True
-            )
+            response_serializer = TreeListResponseSerializer(update_cat, many=True)
         else:
             instance.refresh_from_db()
-            response_serializer = ProductCategoryPatchResponseSerializer(instance)
+            response_serializer = TreeListResponseSerializer(instance)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
@@ -151,16 +145,52 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         return Response(serialzer.data, status=200)
 
     @extend_schema(
-        responses=ProductOptionListResponseSerializer(many=True),
-        description="List of product options that are presented in category.",
+        responses=TreeListResponseSerializer(many=True),
+        description="List of product options that are presented in products for given"
+        " category.",
     )
     @action(
         detail=True,
         methods=["get"],
-        serializer_class=ProductOptionListResponseSerializer,
+        serializer_class=TreeListResponseSerializer,
     )
     def options(self, request, pk: UUID = None):
         """Extra route to obtain list of products for a category."""
         queryset = self.get_queryset()
         serialzer = self.get_serializer(queryset, many=True)
         return Response(serialzer.data, status=200)
+
+    @extend_schema(
+        responses=TreeListResponseSerializer(many=True),
+        description="List of binded product options.",
+    )
+    @action(
+        detail=True,
+        methods=["get", "post"],
+        url_path=r"bind_products",
+        serializer_class=ProductOptionBindedSerializer,
+    )
+    def bind_options(self, request, pk: UUID = None):
+        """Get attached options to category."""
+        if request.method == "GET":
+            queryset = self.get_queryset()
+            response = self.get_serializer(queryset, many=True)
+            return Response(response.data, status=200)
+        if request.method == "POST":
+            serializer = ProductCategorySerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            services.bind_option_to_category(pk, serializer.data["id"])
+            response = ProductOptionBindedSerializer(
+                services.get_options_binded_to_category(pk), many=True
+            )
+            return Response(response.data, status=200)
+
+    @action(
+        detail=True,
+        methods=["delete"],
+        url_path=r"bind_products/(?P<product_id>[^/.]+)",
+    )
+    def bind_options_delete(self, request, pk: UUID, product_id: UUID):
+        """Remove attached options from a category."""
+        services.remove_option_from_category(pk, product_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
