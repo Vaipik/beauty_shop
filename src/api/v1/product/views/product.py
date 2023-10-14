@@ -1,4 +1,3 @@
-from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
@@ -32,41 +31,34 @@ class ProductViewSet(viewsets.ModelViewSet):
             return services.get_detail_product(self.kwargs["pk"])
         return super().get_queryset()
 
-    @extend_schema(
-        # override default docstring extraction
-        description="Return a list of products."
-        "Note that products have only one image - main image. This endpoint can be used"
-        "for main page of website. Also endpoint has filters which are designed "
-        "as query parameters and they are optional.",
-    )
     def list(self, request):  # noqa D102
-        # your non-standard behaviour
+        """Provide an array with all products and their filters.
+
+        Array will contain all products that have been marked as main card and
+        have at least one image with ordering equals to 1. Other will be ignored.
+        Siblings field returns an array of objects that are marked not as main card and
+        have same logic for image.
+        """
         return super().list(request)
 
-    @extend_schema(
-        description="Endpoint to create a new product. Please note that image ordering"
-        " must starts with 1 and be consequent, otherwise you will be obtain"
-        " an error."
-    )
-    def create(self, request, *args, **kwargs):  # noqa D102
+    def create(self, request, *args, **kwargs):
+        """Endpoint to create a new product.
+
+        Note that image ordering must begin from 1 and be consequent. To add siblings
+        you need to provide only their ids.
+        """
         return super().create(request, *args, **kwargs)
 
-    @extend_schema(
-        description="Endpoint that returns a detail information about product for user",
-    )
-    def retrieve(self, request, pk=None):  # noqa D102
-        return super().retrieve(request, pk)
+    def retrieve(self, request, *args, **kwargs):
+        """Provide a detailed data about product."""
+        return super().retrieve(request, *args, **kwargs)
 
-    @extend_schema(
-        description="Endpoint to update a product. Please note that image ordering"
-        " must starts with 1 and be consequent, otherwise you will be obtain"
-        " an error."
-    )
-    def partial_update(self, request, *args, **kwargs):  # noqa D102
+    def partial_update(self, request, *args, **kwargs):
+        """Perform an update for a product. It has same restrictions as POST."""
         return super().partial_update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        """Delete product and images."""
+        """Pefrom hard-delet for product and images."""
         instance = self.get_queryset()
         services.delete_product(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -9,11 +9,36 @@ from api.v1.product.serializers.manufacturer import ProductManufacturerSerialize
 from core.product.models import Product
 
 
-class ProductSiblingsSerializer(serializers.Serializer):
-    """Used to connect products with m2m to themselves."""
+class ProductSiblingsSerializer(serializers.ModelSerializer):
+    """Provide a link to product sibling. Shpuld be used in detail view only."""
 
-    id = serializers.UUIDField()
-    name = serializers.CharField(read_only=True)
+    id = serializers.UUIDField(read_only=False)
+    name = serializers.CharField(source="sibling_name", read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ["id", "name"]
+        read_only_fields = ["name"]
+
+
+class ProductSiblingsWithImagesSerializer(ProductSiblingsSerializer):
+    """Extend serializer and add extra fields for siblings. List view only."""
+
+    images = ProductImageSerializer(many=True, read_only=True)
+
+    class Meta(ProductSiblingsSerializer.Meta):
+        fields = ProductSiblingsSerializer.Meta.fields + [
+            "images",
+            "sku",
+            "status",
+            "price",
+        ]
+        read_only_fields = ProductSiblingsSerializer.Meta.read_only_fields + [
+            "images",
+            "sku",
+            "status",
+            "price",
+        ]
 
 
 class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
@@ -25,7 +50,7 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        exclude = ["created_at", "updated_at", "is_luxury"]
+        exclude = ["created_at", "updated_at", "is_luxury", "categories"]
         read_only_fields = ["id"]
 
     def create(self, validated_data) -> Product:
@@ -77,7 +102,8 @@ class ProductListResponseSerializer(serializers.ModelSerializer):
     """
 
     images = ProductImageSerializer(many=True, read_only=True)
+    siblings = ProductSiblingsWithImagesSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = ["id", "name", "price", "rating", "sku", "images"]
+        fields = ["id", "name", "price", "rating", "sku", "images", "siblings"]
