@@ -1,4 +1,4 @@
-from drf_spectacular.utils import OpenApiExample
+from drf_spectacular.utils import OpenApiExample, OpenApiParameter, OpenApiTypes
 
 
 def get_nested_examples():
@@ -177,5 +177,60 @@ def update_tree_example():
                 ],
             },
             response_only=True,
+        ),
+    ]
+
+
+def get_parameters():
+    """Hardcoded query params for @action in /categories/{id}/products/."""
+    return [
+        OpenApiParameter(
+            name="status",
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="status",
+        ),
+        OpenApiParameter(
+            name="is_luxury",
+            type=OpenApiTypes.BOOL,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="is_luxury",
+        ),
+        OpenApiParameter(
+            name="min_price",
+            type=OpenApiTypes.NUMBER,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="min_price",
+        ),
+        OpenApiParameter(
+            name="max_price",
+            type=OpenApiTypes.NUMBER,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="max_price",
+        ),
+        OpenApiParameter(
+            name="min_rating",
+            type=OpenApiTypes.NUMBER,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="min_rating",
+        ),
+        OpenApiParameter(
+            name="max_rating",
+            type=OpenApiTypes.NUMBER,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="max_rating",
+        ),
+        OpenApiParameter(
+            name="manufacturer",
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="manufacturer",
         ),
     ]
