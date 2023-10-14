@@ -15,7 +15,9 @@ from api.v1.product.serializers import (
     ProductOptionBindedSerializer,
 )
 from api.v1.product.filters import ProductFilter
-from api.v1.product.serializers.common import ProductCategorySerializer
+from api.v1.product.serializers.common import (
+    UUIDListSerializer,
+)
 from core.product.models import ProductCategory
 
 
@@ -47,6 +49,8 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
             return TreeCreateUpdateSerializer
         if self.action == "list":
             return TreeListResponseSerializer
+        if self.action == "bind_options":
+            return ProductOptionBindedSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -163,26 +167,28 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         return Response(serialzer.data, status=200)
 
     @extend_schema(
-        responses=TreeListResponseSerializer(many=True),
         description="List of binded product options.",
+        responses=UUIDListSerializer,
+        request=UUIDListSerializer,
     )
     @action(
         detail=True,
         methods=["get", "post"],
         url_path=r"bind_options",
-        serializer_class=ProductOptionBindedSerializer,
     )
     def bind_options(self, request, pk: UUID = None):
         """Get attached options to category."""
         if request.method == "GET":
             queryset = self.get_queryset()
             response = self.get_serializer(queryset, many=True)
-            return Response(response.data, status=200)
+            ids = [item["id"] for item in response.data]
+            return Response(ids, status=200)
         if request.method == "POST":
-            serializer = ProductCategorySerializer(data=request.data)
+            serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
+
             services.bind_option_to_category(pk, serializer.data["id"])
-            response = ProductOptionBindedSerializer(
+            response = serializer(
                 services.get_options_binded_to_category(pk), many=True
             )
             return Response(response.data, status=200)

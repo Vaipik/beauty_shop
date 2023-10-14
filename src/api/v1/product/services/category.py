@@ -80,10 +80,10 @@ def _change_category_name(category: ProductCategory, name: str | None) -> None:
             category.save()
 
 
-def bind_option_to_category(pk: UUID, option_id: UUID) -> None:
+def bind_option_to_category(pk: UUID, option_id: list[UUID]) -> None:
     """Attach given option to a category."""
     category = ProductCategory.objects.get(pk=pk)
-    category.options.add(option_id)
+    category.options.add(*option_id)
 
 
 def remove_option_from_category(pk: UUID, option_id: UUID) -> None:
