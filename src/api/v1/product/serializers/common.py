@@ -35,3 +35,9 @@ class TreeCreateUpdateSerializer(serializers.Serializer):
     name = serializers.CharField(allow_null=True, allow_blank=True)
     parentId = serializers.UUIDField(allow_null=True, format="hex_verbose")
     toRoot = serializers.BooleanField(allow_null=False, default=False)
+
+
+class UUIDListSerializer(serializers.ListSerializer):
+    """Use it if you need ['uuid1', ..., 'uuidn']."""
+
+    child = serializers.UUIDField()

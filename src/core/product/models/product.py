@@ -44,6 +44,15 @@ class Product(Base, TimeStampedBase):
         choices=ProductStatusChoices.choices,
         default=ProductStatusChoices.IN_STOCK,
     )
+    sibling_name = models.CharField(  # The name that will be displayed at the card
+        max_length=constants.PRODUCT_NAME_MAX_LENGTH,
+        verbose_name=_("Sibling name"),
+    )
+    main_card = models.BooleanField(  # Is product must be main card.
+        verbose_name=_("Main card"),
+        null=False,
+        blank=False,
+    )
     is_luxury = models.BooleanField(
         verbose_name=_("Luxury"),
         null=False,
@@ -75,6 +84,8 @@ class Product(Base, TimeStampedBase):
         to="self",
         related_name="sibling",
         symmetrical=False,
+        null=True,
+        blank=True,
     )
 
     class Meta:

@@ -5,7 +5,6 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.product.models import ProductCategory
 from api.v1.product import services
 from api.v1.product import swagger_examples
 from api.v1.product.serializers import (
@@ -15,7 +14,11 @@ from api.v1.product.serializers import (
     TreeListResponseSerializer,
     ProductOptionBindedSerializer,
 )
-from api.v1.product.serializers.common import ProductCategorySerializer
+from api.v1.product.filters import ProductFilter
+from api.v1.product.serializers.common import (
+    UUIDListSerializer,
+)
+from core.product.models import ProductCategory
 
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):
@@ -46,6 +49,8 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
             return TreeCreateUpdateSerializer
         if self.action == "list":
             return TreeListResponseSerializer
+        if self.action == "bind_options":
+            return ProductOptionBindedSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -131,17 +136,18 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         responses=ProductListResponseSerializer(many=True),
-        description="List of products for category.",
+        parameters=swagger_examples.get_parameters(),
     )
     @action(
         detail=True,
         methods=["get"],
         serializer_class=ProductListResponseSerializer,
     )
-    def products(self, request, pk: UUID = None):
+    def products(self, request, *args, **kwargs):
         """Extra route to obtain list of products for a category."""
-        queryset = self.get_queryset()
-        serialzer = self.get_serializer(queryset, many=True)
+        products = self.get_queryset()
+        filterset = ProductFilter(data=request.query_params, queryset=products)
+        serialzer = self.get_serializer(filterset.qs, many=True)
         return Response(serialzer.data, status=200)
 
     @extend_schema(
@@ -161,26 +167,28 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         return Response(serialzer.data, status=200)
 
     @extend_schema(
-        responses=TreeListResponseSerializer(many=True),
         description="List of binded product options.",
+        responses=UUIDListSerializer,
+        request=UUIDListSerializer,
     )
     @action(
         detail=True,
         methods=["get", "post"],
-        url_path=r"bind_products",
-        serializer_class=ProductOptionBindedSerializer,
+        url_path=r"bind_options",
     )
     def bind_options(self, request, pk: UUID = None):
         """Get attached options to category."""
         if request.method == "GET":
             queryset = self.get_queryset()
             response = self.get_serializer(queryset, many=True)
-            return Response(response.data, status=200)
+            ids = [item["id"] for item in response.data]
+            return Response(ids, status=200)
         if request.method == "POST":
-            serializer = ProductCategorySerializer(data=request.data)
+            serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
+
             services.bind_option_to_category(pk, serializer.data["id"])
-            response = ProductOptionBindedSerializer(
+            response = serializer(
                 services.get_options_binded_to_category(pk), many=True
             )
             return Response(response.data, status=200)
@@ -188,9 +196,9 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["delete"],
-        url_path=r"bind_products/(?P<product_id>[^/.]+)",
+        url_path=r"bind_options/(?P<option_id>[^/.]+)",
     )
-    def bind_options_delete(self, request, pk: UUID, product_id: UUID):
+    def bind_options_delete(self, request, pk: UUID, option_id: UUID):
         """Remove attached options from a category."""
-        services.remove_option_from_category(pk, product_id)
+        services.remove_option_from_category(pk, option_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
