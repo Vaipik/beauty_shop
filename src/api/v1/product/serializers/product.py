@@ -47,10 +47,11 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=False, allow_null=True)
     isLuxury = serializers.BooleanField(source="is_luxury")
     siblings = ProductSiblingsSerializer(many=True)
+    mainCard = serializers.BooleanField(source="main_card")
 
     class Meta:
         model = Product
-        exclude = ["created_at", "updated_at", "is_luxury", "categories"]
+        exclude = ["created_at", "updated_at", "is_luxury", "categories", "main_card"]
         read_only_fields = ["id"]
 
     def create(self, validated_data) -> Product:
