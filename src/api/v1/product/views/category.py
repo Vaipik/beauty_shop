@@ -5,7 +5,6 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.product.models import ProductCategory
 from api.v1.product import services
 from api.v1.product import swagger_examples
 from api.v1.product.serializers import (
@@ -15,7 +14,9 @@ from api.v1.product.serializers import (
     TreeListResponseSerializer,
     ProductOptionBindedSerializer,
 )
+from api.v1.product.filters import ProductFilter
 from api.v1.product.serializers.common import ProductCategorySerializer
+from core.product.models import ProductCategory
 
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):
@@ -131,17 +132,18 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         responses=ProductListResponseSerializer(many=True),
-        description="List of products for category.",
+        parameters=swagger_examples.get_parameters(),
     )
     @action(
         detail=True,
         methods=["get"],
         serializer_class=ProductListResponseSerializer,
     )
-    def products(self, request, pk: UUID = None):
+    def products(self, request, *args, **kwargs):
         """Extra route to obtain list of products for a category."""
-        queryset = self.get_queryset()
-        serialzer = self.get_serializer(queryset, many=True)
+        products = self.get_queryset()
+        filterset = ProductFilter(data=request.query_params, queryset=products)
+        serialzer = self.get_serializer(filterset.qs, many=True)
         return Response(serialzer.data, status=200)
 
     @extend_schema(
@@ -167,7 +169,7 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["get", "post"],
-        url_path=r"bind_products",
+        url_path=r"bind_options",
         serializer_class=ProductOptionBindedSerializer,
     )
     def bind_options(self, request, pk: UUID = None):
@@ -188,9 +190,9 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["delete"],
-        url_path=r"bind_products/(?P<product_id>[^/.]+)",
+        url_path=r"bind_options/(?P<option_id>[^/.]+)",
     )
-    def bind_options_delete(self, request, pk: UUID, product_id: UUID):
+    def bind_options_delete(self, request, pk: UUID, option_id: UUID):
         """Remove attached options from a category."""
-        services.remove_option_from_category(pk, product_id)
+        services.remove_option_from_category(pk, option_id)
         return Response(status=status.HTTP_204_NO_CONTENT)

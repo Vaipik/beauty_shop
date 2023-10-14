@@ -15,29 +15,7 @@ def get_list_products() -> QuerySet[Product]:
     Note that if product have no images attached than this product will not be listed
     in queryset. Same is for siblings images.
     """
-    return (
-        Product.objects.filter(main_card=True)
-        .prefetch_related(
-            Prefetch(
-                lookup="images",
-                queryset=ProductImage.objects.filter(img_order=1),
-            ),
-            Prefetch(
-                lookup="siblings",
-                queryset=(
-                    Product.objects.filter(
-                        images__img_order=1, main_card=False
-                    ).prefetch_related(
-                        Prefetch(
-                            lookup="images",
-                            queryset=ProductImage.objects.filter(img_order=1),
-                        )
-                    )
-                ),
-            ),
-        )
-        .select_related("manufacturer")
-    )
+    return _get_related_list_view(Product.objects.filter(main_card=True))
 
 
 def get_detail_product(pk: UUID) -> QuerySet[Product]:
@@ -83,9 +61,34 @@ def get_product_options(product_id: UUID) -> RawQuerySet:
     return raw_queryset
 
 
+def _get_related_list_view(obj: QuerySet[Product]) -> QuerySet[Product]:
+    """Operate with related objects for list-views."""
+    return obj.prefetch_related(
+        Prefetch(
+            lookup="images",
+            queryset=ProductImage.objects.filter(img_order=1),
+        ),
+        Prefetch(
+            lookup="siblings",
+            queryset=(
+                Product.objects.filter(
+                    images__img_order=1, main_card=False
+                ).prefetch_related(
+                    Prefetch(
+                        lookup="images",
+                        queryset=ProductImage.objects.filter(img_order=1),
+                    )
+                )
+            ),
+        ),
+    ).select_related("manufacturer")
+
+
 def get_products_for_category(category_id: UUID) -> QuerySet[Product]:
     """Return all products for a category."""
-    return Product.objects.filter(categories__id=category_id)
+    return _get_related_list_view(
+        Product.objects.filter(main_card=True, categories__id=category_id)
+    )
 
 
 def get_products_by_manufacturer(pk: UUID):
