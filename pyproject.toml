@@ -42,9 +42,9 @@ select = [
     "F",
     "D"
 ]
-exclude = ["settings.py", "admin.py", "apps.py", "migrations", "README.md"]
+exclude = ["settings.py", "admin.py", "apps.py", "migrations", "tests", "README.md"]
 ignore = ["D100", "D104", "D105", "D106", "D107", "F821",]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.settings"
+DJANGO_SETTINGS_MODULE = "src.config.settings"
 python_files = ["test_*.py"]

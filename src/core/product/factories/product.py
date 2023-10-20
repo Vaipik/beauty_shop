@@ -12,7 +12,7 @@ class ProductFactory(factory.django.DjangoModelFactory):
 
     name = factory.fuzzy.FuzzyText()
     rating = factory.fuzzy.FuzzyDecimal(low=0, high=5)
-    price = factory.fuzzy.FuzzyInteger(
+    price = factory.fuzzy.FuzzyDecimal(
         low=0, high=constants.PRODUCT_PRICE_MAX_DIGITS - 2  # exclude after dot
     )
     sku = factory.fuzzy.FuzzyInteger(low=0, high=2147483647)  # PositiveInteger
