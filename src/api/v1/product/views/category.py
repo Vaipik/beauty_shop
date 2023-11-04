@@ -184,14 +184,15 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
             ids = [item["id"] for item in response.data]
             return Response(ids, status=200)
         if request.method == "POST":
-            serializer = self.get_serializer(data=request.data)
+            serializer = UUIDListSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
 
-            services.bind_option_to_category(pk, serializer.data["id"])
-            response = serializer(
+            services.bind_option_to_category(pk, serializer.data)
+            response = self.get_serializer(
                 services.get_options_binded_to_category(pk), many=True
             )
-            return Response(response.data, status=200)
+            ids = [item["id"] for item in response.data]
+            return Response(ids, status=201)
 
     @action(
         detail=True,
