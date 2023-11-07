@@ -18,7 +18,7 @@ pillow = "^10.0.0"
 django = "^4.2.4"
 django-filter = "^23.2"
 django-treebeard = {git = "https://github.com/Vaipik/django-treebeard.git"}
-pytest-factoryboy = "^2.6.0"
+
 
 
 [tool.poetry.group.dev.dependencies]
