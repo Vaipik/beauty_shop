@@ -44,7 +44,7 @@ select = [
     "D"
 ]
 exclude = ["settings.py", "admin.py", "apps.py", "migrations", "tests", "README.md"]
-ignore = ["D100", "D104", "D105", "D106", "D107", "F821",]
+ignore = ["D100", "D104", "D105", "D106", "D107", "D104", "D401", "F821",]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "src.config.settings"
