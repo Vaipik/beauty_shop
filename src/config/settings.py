@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "treebeard",
     "corsheaders",
     "django_filters",
+    "djoser",
     # APPS
     "core.product",
     "core.order",
@@ -113,6 +114,9 @@ MEDIA_ROOT = BASE_DIR / "media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AUTH_USER_MODEL = "user_auth.User"
+
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -126,6 +130,13 @@ STORAGES = {
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 # django-cors-headers
@@ -138,9 +149,3 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
-
-# django-storages
-DROPBOX_ROOT_PATH = os.environ.get("DROPBOX_ROOT_PATH")
-DROPBOX_APP_KEY = os.environ.get("DROPBOX_APP_KEY")
-DROPBOX_APP_SECRET = os.environ.get("DROPBOX_APP_SECRET")
-DROPBOX_OAUTH2_REFRESH_TOKEN = os.environ.get("DROPBOX_OAUTH2_REFRESH_TOKEN")
