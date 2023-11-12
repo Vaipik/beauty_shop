@@ -51,7 +51,7 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        exclude = ["created_at", "updated_at", "is_luxury", "categories", "main_card"]
+        exclude = ["created_at", "updated_at", "is_luxury", "main_card"]
         read_only_fields = ["id"]
 
     def create(self, validated_data) -> Product:
@@ -87,7 +87,7 @@ class ProductDetailResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        exclude = ["id", "categories", "created_at", "updated_at"]
+        exclude = ["id", "created_at", "updated_at"]
 
     @extend_schema_field(ProductOptionListSerializer(many=True))
     def get_options(self, instance: Product):
