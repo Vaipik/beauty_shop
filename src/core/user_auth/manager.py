@@ -47,6 +47,7 @@ class UserManager(BaseUserManager):
         """Create superuser."""
         kwargs.setdefault("is_superuser", True)
         kwargs.setdefault("is_active", True)
+        kwargs.setdefault("role", "A")  # admin
 
         if kwargs.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")

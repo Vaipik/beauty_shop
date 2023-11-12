@@ -46,11 +46,11 @@ class User(Base, TimeStampedBase, AbstractBaseUser, PermissionsMixin):
     )
 
     objects = UserManager()
-
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
 
     class Meta:
+        db_table = "auth_user"
         verbose_name = _("User")
         verbose_name_plural = _("Users")
         unique_together = ["username", "email", "phone"]
