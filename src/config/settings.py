@@ -115,7 +115,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # AUTH
 AUTH_USER_MODEL = "user_auth.User"
-AUTHENTICATION_BACKENDS = ("user_auth.backends.AuthBackend",)
+AUTHENTICATION_BACKENDS = ("core.user_auth.backends.AuthBackend",)
 
 
 STORAGES = {
