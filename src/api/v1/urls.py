@@ -27,4 +27,5 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path("", include("api.v1.cart.urls")),
 ]
