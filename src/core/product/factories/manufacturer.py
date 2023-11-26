@@ -11,3 +11,4 @@ class ProductManufacturerFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = ProductManufacturer
+        django_get_or_create = ["name"]

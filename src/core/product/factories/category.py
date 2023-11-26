@@ -1,4 +1,4 @@
-from factory import SubFactory, Sequence, post_generation
+from factory import Sequence, post_generation
 from factory.django import DjangoModelFactory
 from core.product.models import ProductCategory
 
@@ -6,11 +6,11 @@ from core.product.models import ProductCategory
 class ProductCategoryFactory(DjangoModelFactory):
     """Factory for product category."""
 
+    name = Sequence(lambda n: f"Category_{n}")
+
     class Meta:
         model = ProductCategory
-
-    name = Sequence(lambda n: f"Category_{n}")
-    parent = SubFactory("self", null=True)
+        django_get_or_create = ("name",)
 
     @post_generation
     def add_children(self, create, extracted, **kwargs):
