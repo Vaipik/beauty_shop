@@ -1,117 +1,91 @@
-from django.shortcuts import get_object_or_404
+from uuid import UUID
+
+from django.db.models import QuerySet
+from rest_framework import permissions
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from api.v1.cart.serializers.cart import ShoppingCartSerializer
-from core.product.models import Product
-from core.cart.models.cart import ShoppingCart, CartItem
+
+from api.v1.cart.serializers.cart import CartSerializer, CartItemSerializer
+from core.cart.models.cart import Cart, CartItem
 
 
-class ShoppingCartViewSet(viewsets.ModelViewSet):
-    """Cart processing class for registered user."""
+class CartViewSet(viewsets.ModelViewSet):
+    """Handlers for operation with carts."""
 
-    queryset = ShoppingCart.objects.all()
-    serializer_class = ShoppingCartSerializer
+    http_method_names = ["get", "post", "patch", "delete"]
+    serializer_class = CartSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        """Display data only for a specific user."""
-        user = self.request.user
-        if user.is_authenticated:
-            queryset = ShoppingCart.objects.filter(user=user)
-            return queryset
-        else:
-            return ShoppingCart.objects.none()
+        """Get a queryset based on the action."""
+        if self.action in {"retrieve", "partial_update", "destroy"}:
+            return get_detail_cart(pk=self.kwargs["pk"])
 
     def create(self, request, *args, **kwargs):
-        """Cart creation method. Request POST."""
-        user = request.user
-        if user.is_authenticated:
-            product_id = request.data.get("product")
-            quantity = request.data.get("quantity")
-        else:
-            return Response(
-                {"error": "User is not authenticated."},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        """Create the serializer with request data and user context."""
+        serializer = self.serializer_class(
+            data=request.data, context={"user": request.user}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if not product_id or not quantity:
-            return Response(
-                {"error": "Product and quantity are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        product = get_object_or_404(Product, id=product_id)
-        cart = self.create_or_update_cart(user, product, quantity)
-        # return response
-        serializer = self.get_serializer(cart)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def create_or_update_cart(self, user, product, quantity):
-        """Check the existence of the user and the cart.."""
-        cart, created = ShoppingCart.objects.get_or_create(user=user)
-        self.add_product_to_cart(cart, product, quantity)
-        return cart
-
-    def add_product_to_cart(self, cart, product, quantity):
-        """Сhange the number of items in the cart using POST, PUT, PATCH requests."""
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        if created:
-            cart_item.quantity = quantity
-        else:
-            cart_item.quantity += quantity
-        cart_item.save()
-
-    def update(self, request, *args, **kwargs):
-        """Cart updation method. Request PUT, PATCH."""
-        user = request.user
-        cart_id = kwargs.get("pk")
-        cart = get_object_or_404(ShoppingCart, id=cart_id, user=user)
-        products = request.data.get("cartitem_set", [])
-        self.update_cart(cart, products)
-
-        # return response
-        serializer = self.get_serializer(cart)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def update_cart(self, cart, products):
-        """Receive an updated product and quantity."""
-        for product_data in products:
-            product_id = product_data.get("product")
-            quantity = product_data.get("quantity")
-
-            if not product_id or not quantity:
-                return Response(
-                    {"error": "Product and quantity are required."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            product = get_object_or_404(Product, id=product_id)
-
-            self.add_product_to_cart(cart, product, quantity)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
-        """Remove an item from the cart."""
-        user = request.user
-        cart_id = kwargs.get("pk")
-        cart = get_object_or_404(ShoppingCart, id=cart_id, user=user)
-        products = request.data.get("cartitem_set", [])
-        self.delete_cart_item(cart, products)
-        cart.refresh_from_db()  # refresh the data of the cart object from the database.
-        serializer = self.get_serializer(cart)
+        """Delete Cart."""
+        instance = self.get_object()
+        delete_cart(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-        # return response
-        # if cart is empty, delete cart
-        if cart.cartitem_set.count() == 0:
-            cart.delete()
-            return Response(
-                {"message": "ShoppingCart deleted successfully."},
-                status=status.HTTP_204_NO_CONTENT,
-            )
-        else:
-            return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def delete_cart_item(self, cart, products):
-        """Receive deleted product."""
-        for product in products:
-            product_id = product.get("product")
-            cart_item = get_object_or_404(CartItem, cart=cart, product=product_id)
-            cart_item.delete()
+def get_detail_cart(pk: UUID) -> QuerySet[Cart]:
+    """Return detailed data for a specific cart."""
+    return (
+        Cart.objects.prefetch_related("items")
+        .select_related("user")
+        .filter(pk=pk, is_active=True)
+    )
+
+
+def delete_cart(cart):
+    """Make the cart inactive when an order is created or there are no items."""
+    cart.is_active = False
+    cart.save()
+
+
+def check_cart(cart):
+    """Сheck cart for items."""
+    if cart.items.count() == 0:
+        delete_cart(cart)
+
+
+class CartItemViewSet(viewsets.ModelViewSet):
+    """Handlers for operation with items."""
+
+    http_method_names = ["get", "delete"]
+    serializer_class = CartItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """Get a queryset based on the action."""
+        if self.action in {"retrieve", "destroy"}:
+            return get_detail_cartitem(pk=self.kwargs["pk"])
+
+    def destroy(self, request, *args, **kwargs):
+        """Delete CartItem."""
+        instance = self.get_object()
+        cart = instance.cart
+        delete_cart_item(instance, cart)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def get_detail_cartitem(pk: UUID) -> QuerySet[CartItem]:
+    """Return detailed data for a specific item."""
+    return CartItem.objects.select_related("cart", "product").filter(pk=pk)
+
+
+def delete_cart_item(cartitem, cart):
+    """Delete item."""
+    cartitem.delete()
+    check_cart(cart)

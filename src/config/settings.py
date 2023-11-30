@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "core.product",
     "core.order",
     "core.user_auth",
+    "core.cart",
     # API
     "api.v1.product",
     "api.v1.order",
