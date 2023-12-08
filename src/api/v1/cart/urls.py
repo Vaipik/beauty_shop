@@ -1,7 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
-from api.v1.cart.view.cart import CartViewSet, CartItemViewSet
+from api.v1.cart.view.cart import CartViewSet
+from api.v1.cart.view.cartitem import CartItemViewSet
 
 cart_router = SimpleRouter()
 cart_router.register(prefix="carts", viewset=CartViewSet, basename="carts")
