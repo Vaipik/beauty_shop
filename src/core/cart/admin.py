@@ -1,5 +1,6 @@
 from django.contrib import admin
-from core.cart.models.cart import *
+
+from core.cart.models import Cart, CartItem
 
 
 class CartItemInline(admin.TabularInline):
@@ -7,7 +8,7 @@ class CartItemInline(admin.TabularInline):
     extra = 2
 
 
-class ShoppingCartAdmin(admin.ModelAdmin):
+class CartAdmin(admin.ModelAdmin):
     inlines = [CartItemInline]
     list_display = (
         "id",
@@ -16,6 +17,7 @@ class ShoppingCartAdmin(admin.ModelAdmin):
         "total_price",
         "created_at",
         "updated_at",
+        "is_active",
     )
 
 
@@ -26,10 +28,8 @@ class CartItemAdmin(admin.ModelAdmin):
         "quantity",
         "price",
         "cost",
-        "created_at",
-        "updated_at",
     )
 
 
-admin.site.register(ShoppingCart, ShoppingCartAdmin)
+admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem, CartItemAdmin)
