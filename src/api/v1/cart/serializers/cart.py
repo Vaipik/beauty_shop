@@ -4,7 +4,7 @@ from rest_framework import serializers
 from api.v1.cart.serializers.cartitem import CartItemSerializer
 from api.v1.cart.services.cart import create_or_update_cart, update_cart
 from core.cart.models.cart import Cart
-from core.product.constants import PRODUCT_PRICE_MAX_DIGITS
+
 
 User = get_user_model()
 
@@ -15,7 +15,7 @@ class CartSerializer(serializers.ModelSerializer):
     totalQuantity = serializers.IntegerField(source="total_quantity", read_only=True)
     totalPrice = serializers.DecimalField(
         source="total_price",
-        max_digits=PRODUCT_PRICE_MAX_DIGITS,
+        max_digits=10,
         decimal_places=2,
         read_only=True,
     )
