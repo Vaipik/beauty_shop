@@ -36,11 +36,11 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email, password=None, **kwargs):
+    def create_user(self, username, email=None, password=None, phone=None, **kwargs):
         """Create common user."""
         kwargs.setdefault("is_superuser", False)
         return self._create_user(
-            username=username, email=email, password=password, **kwargs
+            username=username, email=email, password=password, phone=phone, **kwargs
         )
 
     def create_superuser(self, username, password, **kwargs):
