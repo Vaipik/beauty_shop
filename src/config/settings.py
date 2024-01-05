@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # API
     "api.v1.product",
     "api.v1.order",
+    "api.v1.users",
 ]
 
 MIDDLEWARE = [
@@ -142,12 +143,16 @@ SIMPLE_JWT = {
 
 # DJOSER
 DJOSER = {
-    "USER_CREATE_PASSWORD_RETYPE": True,
-    "SEND_ACTIVATION_EMAIL": True,
+    # "SEND_ACTIVATION_EMAIL": True,
     "SET_PASSWORD_RETYPE": True,
     "PASSWORD_RESET_CONFIRM_RETYPE": True,
     "TOKEN_MODEL": None,  # We use only JWT
-    "ACTIVATION_URL": "auth/verify/{uid}/{token}/",
+    # "ACTIVATION_URL": "auth/verify/{uid}/{token}/",
+    "SERIALIZERS": {
+        "user_create": "api.v1.users.serializers.UserCreateSerializer",
+        "current_user": "api.v1.users.serializers.UserSerializer",
+        "user": "api.v1.users.serializers.UserSerializer",
+    },
 }
 
 

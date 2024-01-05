@@ -1,13 +1,12 @@
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 
 from core.base.models import Base, TimeStampedBase
 from core.user_auth.manager import UserManager
 
 
-class User(Base, TimeStampedBase, AbstractBaseUser, PermissionsMixin):
+class User(Base, TimeStampedBase, AbstractBaseUser):
     """Extend standart user to provide extra roles."""
 
     class UserRoles(models.TextChoices):
@@ -44,6 +43,7 @@ class User(Base, TimeStampedBase, AbstractBaseUser, PermissionsMixin):
         choices=UserRoles.choices,
         default=UserRoles.CUSTOMER,
     )
+    is_superuser = models.BooleanField(default=False)
 
     objects = UserManager()
     USERNAME_FIELD = "username"
