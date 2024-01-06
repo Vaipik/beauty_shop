@@ -47,6 +47,7 @@ class UserManager(BaseUserManager):
         """Create superuser."""
         kwargs.setdefault("is_superuser", True)
         kwargs.setdefault("is_active", True)
+        kwargs.setdefault("is_staff", True)  # required by djoser
         kwargs.setdefault("role", "A")  # admin
 
         if kwargs.get("is_superuser") is not True:

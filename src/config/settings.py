@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -140,12 +141,12 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
 }
 
 # DJOSER
 DJOSER = {
     # "SEND_ACTIVATION_EMAIL": True,
-    "SET_PASSWORD_RETYPE": True,
     "PASSWORD_RESET_CONFIRM_RETYPE": True,
     "TOKEN_MODEL": None,  # We use only JWT
     # "ACTIVATION_URL": "auth/verify/{uid}/{token}/",

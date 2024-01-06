@@ -13,6 +13,7 @@ class UserSerializer(TimeStampedSerializer, serializers.ModelSerializer):
     """Overriding default djoser user serializer."""
 
     isActive = serializers.BooleanField(source="is_active", read_only=True)
+    isStaff = serializers.BooleanField(source="is_staff", read_only=True)
     isSuperUser = serializers.BooleanField(source="is_superuser", read_only=True)
     lastLogin = serializers.DateTimeField(source="last_login", read_only=True)
 
@@ -24,6 +25,7 @@ class UserSerializer(TimeStampedSerializer, serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "is_superuser",
+            "is_staff",
         ]
         read_only_fields = ["id", "email", "phone", "role"]
         write_only_fields = ["password"]
