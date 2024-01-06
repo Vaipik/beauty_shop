@@ -1,12 +1,12 @@
 name: tests
-run-name: ${{ github.actor }} ruff check
+run-name: ${{ github.actor }} tests check
 on:
   push:
-    branches:
-      - dev
+    branches-ignore:
+      - main
   pull_request:
-    branches:
-      - dev
+    branches-ignore:
+      - main
 
 jobs:
   build:
