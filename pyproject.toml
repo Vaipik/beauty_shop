@@ -47,6 +47,6 @@ exclude = ["settings.py", "admin.py", "apps.py", "migrations", "tests", "README.
 ignore = ["D100", "D104", "D105", "D106", "D107", "D104", "D401", "F821",]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "src.config.settings"
+DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py"]
-addopts = "--ds=config.settings"
+pythonpath = "src"
