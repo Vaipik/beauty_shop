@@ -27,12 +27,14 @@ class User(Base, TimeStampedBase, AbstractBaseUser):
         verbose_name=_("Email address"),
         blank=True,
         null=True,
+        unique=True,
     )
     phone = models.CharField(
         max_length=10,  # 01234567890
         verbose_name=_("Mobile phone"),
         blank=True,
         null=True,
+        unique=True,
     )
     is_active = models.BooleanField(
         default=True,
