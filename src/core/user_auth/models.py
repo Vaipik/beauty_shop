@@ -45,6 +45,7 @@ class User(Base, TimeStampedBase, AbstractBaseUser):
         choices=UserRoles.choices,
         default=UserRoles.CUSTOMER,
     )
+    is_staff = models.BooleanField(default=False)  # required by djoser
     is_superuser = models.BooleanField(default=False)
 
     objects = UserManager()
