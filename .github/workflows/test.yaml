@@ -21,7 +21,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff pytest pytest-django
+          pip install ruff==0.0.280 pytest pytest-django
       - name: Run ruff
         run: ruff check --format=github --select E,F,D --ignore D100,D104,D105,D106,D107,F821 src
       - name: pytest
