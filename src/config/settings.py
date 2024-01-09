@@ -138,22 +138,10 @@ REST_FRAMEWORK = {
     ),
 }
 
+# Simple JWT
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
-}
-
-# DJOSER
-DJOSER = {
-    # "SEND_ACTIVATION_EMAIL": True,
-    "PASSWORD_RESET_CONFIRM_RETYPE": True,
-    "TOKEN_MODEL": None,  # We use only JWT
-    # "ACTIVATION_URL": "auth/verify/{uid}/{token}/",
-    "SERIALIZERS": {
-        "user_create": "api.v1.users.serializers.UserCreateSerializer",
-        "current_user": "api.v1.users.serializers.UserSerializer",
-        "user": "api.v1.users.serializers.UserSerializer",
-    },
 }
 
 
