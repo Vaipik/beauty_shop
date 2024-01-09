@@ -1,9 +1,12 @@
 import typing
 
+from django.contrib.auth import get_user_model
 from rest_framework import permissions
 
 if typing.TYPE_CHECKING:
     from core.user_auth.models import User
+
+User: User = get_user_model()
 
 
 class AdminPermission(permissions.BasePermission):
