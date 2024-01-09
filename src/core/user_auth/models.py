@@ -17,10 +17,33 @@ class User(Base, TimeStampedBase, AbstractBaseUser):
         CUSTOMER = "U", _("Customer")
         ADMIN = "A", _("Administrator")
 
+    class UserSex(models.TextChoices):
+        """Extra roles."""
+
+        MALE = "M", _("Male")
+        FEMALE = "F", _("Female")
+        UNDEFINED = "U", _("Undefined")
+
     username = models.CharField(
         max_length=255,  # same as email
         unique=True,
         verbose_name=_("Email or mobile number"),
+    )
+    first_name = models.CharField(
+        max_length=255,
+        verbose_name=_("First name"),
+        null=True,
+    )
+    last_name = models.CharField(
+        max_length=255,
+        verbose_name=_("Last name"),
+        null=True,
+    )
+    sex = models.CharField(
+        max_length=1,
+        verbose_name=_("Sex"),
+        choices=UserSex.choices,
+        default=UserSex.UNDEFINED,
     )
     email = models.EmailField(
         max_length=255,
