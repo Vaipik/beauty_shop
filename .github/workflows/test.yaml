@@ -36,6 +36,8 @@ jobs:
       - name: Install project
         run: poetry install --no-interaction
       - name: pytest
+        env:
+          SECRET_KEY: secret_key
         run: |
           source .venv/bin/activate
           pytest
