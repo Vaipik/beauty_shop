@@ -26,9 +26,9 @@ def user_sign_up_with_phone(db):
 
 
 @pytest.fixture(scope="module")
-def user_list_url() -> str:
+def users_list_url() -> str:
     """Return an url for user-list djoser library."""
-    return reverse("user-list")
+    return reverse("users:users-list")
 
 
 @pytest.fixture(scope="module")

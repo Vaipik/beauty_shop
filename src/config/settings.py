@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     "treebeard",
     "corsheaders",
     "django_filters",
-    "djoser",
+    "rest_framework_simplejwt",
     # APPS
     "core.product",
     "core.order",
