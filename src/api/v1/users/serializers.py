@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from api.base.serializers import TimeStampedSerializer
 
+from api.v1.order.serializers import OrderSerializer
 from api.v1.users import services
 
 User = get_user_model()
@@ -57,3 +58,13 @@ class UserCreateSerializer(UserSerializer):
     def create(self, validated_data) -> User:
         """Create custom user."""
         return services.create_user(validated_data)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """Extend base serializer with user orders."""
+
+    orders = OrderSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "sex", "phone", "email", "orders"]
