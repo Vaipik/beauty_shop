@@ -17,3 +17,11 @@ class AdminPermission(permissions.BasePermission):
         user: User = request.user
         if user.role == User.UserRoles.ADMIN:
             return True
+
+
+class OwnerPermission(permissions.BasePermission):
+    """Object-level permission to only allow owners of an object to edit it."""
+
+    def has_object_permission(self, request, view, obj):
+        """Check that user are the owner."""
+        return obj.pk == request.user.pk

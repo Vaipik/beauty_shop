@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 
-from api.base.permissions import AdminPermission
+from api.base.permissions import AdminPermission, OwnerPermission
 
 from .serializers import UserSerializer, UserCreateSerializer, UserProfileSerializer
 
@@ -23,6 +23,8 @@ class UserViewSiet(viewsets.ModelViewSet):
         """To use a custom permissions."""
         if self.action in {"list", "retrieve", "partial_update", "destroy"}:
             permission_classes = [AdminPermission]
+        elif self.action == "me":
+            permission_classes = [OwnerPermission]
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]

@@ -1,3 +1,5 @@
+import typing
+
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
@@ -7,7 +9,11 @@ from api.base.serializers import TimeStampedSerializer
 from api.v1.order.serializers import OrderSerializer
 from api.v1.users import services
 
-User = get_user_model()
+
+if typing.TYPE_CHECKING:
+    from core.user_auth.models import User
+
+User: User = get_user_model()
 
 
 class UserSerializer(TimeStampedSerializer, serializers.ModelSerializer):
