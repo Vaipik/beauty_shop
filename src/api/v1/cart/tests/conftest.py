@@ -5,8 +5,9 @@ from pytest_factoryboy import register
 from rest_framework.test import APIClient
 
 from core.cart.factories.cart import CartFactory
-from core.cart.factories.cartitem import CartItemFactory
-from core.product.factories import ProductFactory
+from core.cart.factories.cartitem import CartItemFactory, ProductFactory  # TODO: REMOVE
+
+# from core.product.factories import ProductFactory
 from core.user_auth.factories import UserFactory
 
 register(UserFactory)
