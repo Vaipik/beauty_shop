@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,12 +29,15 @@ INSTALLED_APPS = [
     "treebeard",
     "corsheaders",
     "django_filters",
+    "rest_framework_simplejwt",
     # APPS
     "core.product",
     "core.order",
+    "core.user_auth",
     # API
     "api.v1.product",
     "api.v1.order",
+    "api.v1.users",
 ]
 
 MIDDLEWARE = [
@@ -111,6 +115,11 @@ MEDIA_ROOT = BASE_DIR / "media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# AUTH
+AUTH_USER_MODEL = "user_auth.User"
+AUTHENTICATION_BACKENDS = ("core.user_auth.backends.AuthBackend",)
+
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -124,7 +133,17 @@ STORAGES = {
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
 }
+
+# Simple JWT
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+}
+
 
 # django-cors-headers
 CORS_ALLOW_ALL_ORIGINS = True
@@ -136,9 +155,3 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
-
-# django-storages
-DROPBOX_ROOT_PATH = os.environ.get("DROPBOX_ROOT_PATH")
-DROPBOX_APP_KEY = os.environ.get("DROPBOX_APP_KEY")
-DROPBOX_APP_SECRET = os.environ.get("DROPBOX_APP_SECRET")
-DROPBOX_OAUTH2_REFRESH_TOKEN = os.environ.get("DROPBOX_OAUTH2_REFRESH_TOKEN")
