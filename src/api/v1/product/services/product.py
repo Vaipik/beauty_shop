@@ -179,9 +179,9 @@ def update_product(
     :param siblings: product siblings that must be updated.
     :return:
     """
-    manufacturer = validated_data.pop("manufacturer")
-    categories = validated_data.pop("categories")
-    options = validated_data.pop("options")
+    manufacturer = validated_data.pop("manufacturer", None)
+    categories = validated_data.pop("categories", None)
+    options = validated_data.pop("options", None)
 
     if categories:
         product.categories.add(*categories)
@@ -196,6 +196,9 @@ def update_product(
     for image in images:
         img_order = image["img_order"]
         product.images.filter(id=image["id"]).update(img_order=img_order)
+    for field, value in validated_data.items():
+        setattr(product, field, value)
+    product.save()
 
     return product
 
