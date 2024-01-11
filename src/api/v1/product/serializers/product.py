@@ -10,7 +10,7 @@ from core.product.models import Product
 
 
 class ProductSiblingsSerializer(serializers.ModelSerializer):
-    """Provide a link to product sibling. Shpuld be used in detail view only."""
+    """Provide a link to product sibling. Should be used in detail view only."""
 
     id = serializers.UUIDField(read_only=False)
     name = serializers.CharField(source="sibling_name", read_only=True)
@@ -48,10 +48,11 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
     isLuxury = serializers.BooleanField(source="is_luxury")
     siblings = ProductSiblingsSerializer(many=True)
     mainCard = serializers.BooleanField(source="main_card")
+    siblingName = serializers.CharField(source="sibling_name")
 
     class Meta:
         model = Product
-        exclude = ["created_at", "updated_at", "is_luxury", "main_card"]
+        exclude = ["created_at", "updated_at", "is_luxury", "main_card", "sibling_name"]
         read_only_fields = ["id"]
 
     def create(self, validated_data) -> Product:
@@ -62,8 +63,8 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
 
     def update(self, instance, validated_data) -> Product:
         """Update product."""
-        images = validated_data.pop("images")
-        siblings = validated_data.pop("siblings")
+        images = validated_data.pop("images", None)
+        siblings = validated_data.pop("siblings", None)
         return services.update_product(instance, validated_data, images, siblings)
 
     def validate_images(self, images: dict) -> dict | None:
@@ -84,10 +85,11 @@ class ProductDetailResponseSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     manufacturer = ProductManufacturerSerializer()
     options = serializers.SerializerMethodField()
+    siblingName = serializers.CharField(source="sibling_name")
 
     class Meta:
         model = Product
-        exclude = ["id", "created_at", "updated_at"]
+        exclude = ["id", "created_at", "updated_at", "sibling_name"]
 
     @extend_schema_field(ProductOptionListSerializer(many=True))
     def get_options(self, instance: Product):
