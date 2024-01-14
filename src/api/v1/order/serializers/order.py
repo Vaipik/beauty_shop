@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers, status
 
-from utils.phone import is_phone_number_valid
-from core.order.models import Order
 from api.v1.order import services
+from core.order.models import Order
+from utils.phone import is_phone_number_valid
 from .item import OrderItemSerializer
 
 
@@ -16,7 +16,7 @@ class OrderSerializer(serializers.ModelSerializer):
     firstName = serializers.CharField(source="first_name")
     lastName = serializers.CharField(source="last_name")
     isPaid = serializers.BooleanField(source="is_paid")
-    userId = serializers.IntegerField(source="user_id")
+    userId = serializers.UUIDField(source="user_id")
     items = OrderItemSerializer(many=True)
 
     class Meta:
@@ -54,7 +54,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderUpdateSerializer(OrderSerializer):
     """Serializer for update. RO fields is only Order ID."""
 
-    items = OrderItemSerializer(many=True, read_only=True)
+    items = OrderItemSerializer(many=True)
 
     class Meta(OrderSerializer.Meta):
         read_only_fields = ["id"]

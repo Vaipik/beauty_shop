@@ -9,13 +9,13 @@ def get_order_item(pk: UUID) -> str:
     return OrderItem.objects.select_related("order", "product").filter(pk=pk)
 
 
-def create_order_item(order_id: UUID, product_id: UUID, quantity: int) -> OrderItem:
+def create_order_item(order: Order, product_id: UUID, quantity: int) -> OrderItem:
     """Create a single order item for existing order."""
     price = Product.objects.get(pk=product_id).price
-    order_item = OrderItem.objects.create(
+    order_item = OrderItem(
         price=price,
         quantity=quantity,
-        order_id=order_id,
+        order=order,
         product_id=product_id,
     )
     return order_item
@@ -23,9 +23,11 @@ def create_order_item(order_id: UUID, product_id: UUID, quantity: int) -> OrderI
 
 def create_order_items(order: Order, items: list[dict]) -> None:
     """Create order items for given order instance."""
-    [
-        create_order_item(
-            order.id, product_id=item["product_id"], quantity=item["quantity"]
-        )
-        for item in items
-    ]
+    OrderItem.objects.bulk_create(
+        [
+            create_order_item(
+                order, product_id=item["product_id"], quantity=item["quantity"]
+            )
+            for item in items
+        ]
+    )
