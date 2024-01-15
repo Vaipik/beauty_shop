@@ -17,7 +17,7 @@ User: User = get_user_model()
 
 
 class UserSerializer(TimeStampedSerializer, serializers.ModelSerializer):
-    """Overriding default djoser user serializer."""
+    """Base schema with upperCamelCase fields."""
 
     isActive = serializers.BooleanField(source="is_active", read_only=True)
     isStaff = serializers.BooleanField(source="is_staff", read_only=True)
@@ -39,7 +39,7 @@ class UserSerializer(TimeStampedSerializer, serializers.ModelSerializer):
 
 
 class UserCreateSerializer(UserSerializer):
-    """Extending base serializer with password retype field."""
+    """Schema with password retype field."""
 
     default_error_messages = {
         "password_mismatch": _("The two password fields didn't match.")
@@ -67,10 +67,21 @@ class UserCreateSerializer(UserSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    """Extend base serializer with user orders."""
+    """Schema with user orders."""
 
     orders = OrderSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
         fields = ["first_name", "last_name", "sex", "phone", "email", "orders"]
+
+
+class UserProductFeedbackSerializer(serializers.ModelSerializer):
+    """Schema to use for product feedbacks."""
+
+    firstName = serializers.CharField(source="first_name", read_only=True)
+    lastName = serializers.CharField(source="last_name", read_only=True)
+
+    class Meta:
+        model = User
+        fields = ["firstName", "lastName"]

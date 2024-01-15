@@ -27,7 +27,13 @@ def get_detail_product(pk: UUID) -> QuerySet[Product]:
     :return: queryset with the only ony product.
     """
     return (
-        Product.objects.prefetch_related("images", "options", "siblings", "categories")
+        Product.objects.prefetch_related(
+            "images",
+            "options",
+            "siblings",
+            "categories",
+            "feedbacks",
+        )
         .select_related("manufacturer")
         .filter(pk=pk)
     )
