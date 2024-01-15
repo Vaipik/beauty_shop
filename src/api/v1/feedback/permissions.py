@@ -12,7 +12,7 @@ class LeaveFeedbackPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         """Verify that request user has compeleted order and product is in list."""
-        product_id = request.data["product"]
+        product_id = request.data["productId"]
         user_id = request.user.pk
         if not check_product_in_order(product_id, user_id):
             return False
