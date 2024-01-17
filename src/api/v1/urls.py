@@ -15,6 +15,7 @@ urlpatterns = [
     path("", include("api.v1.order.urls")),
     path("", include("api.v1.cart.urls")),
     path("", include("api.v1.users.urls")),
+    path("", include("api.v1.feedback.urls")),
     path("jwt/create/", TokenObtainPairView.as_view(), name="jwt-create"),
     path("jwt/refresh/", TokenRefreshView.as_view(), name="jwt-refresh"),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),

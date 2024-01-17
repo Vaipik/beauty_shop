@@ -2,9 +2,8 @@ name: tests
 run-name: ${{ github.actor }} tests check
 on:
   push:
-    branches:
+    branches-ignore:
       - main
-      - dev
   pull_request:
     branches-ignore:
       - main

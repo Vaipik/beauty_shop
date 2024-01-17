@@ -31,13 +31,15 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework_simplejwt",
     # APPS
+    "core.cart",
+    "core.feedback",
     "core.product",
     "core.order",
-    "core.cart",
     "core.user_auth",
+    "api.v1.cart",
+    "api.v1.feedback",
     "api.v1.product",
     "api.v1.order",
-    "api.v1.cart",
     "api.v1.users",
 ]
 
@@ -151,8 +153,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # drf-spectacular
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Your Project API",
+    "TITLE": "Beauty shop API",
     "DESCRIPTION": "Your project description",
-    "VERSION": "1.0.0",
+    "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
