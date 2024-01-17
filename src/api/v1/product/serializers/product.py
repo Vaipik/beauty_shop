@@ -2,6 +2,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from api.base.serializers import TimeStampedSerializer
+from api.v1.feedback.serializers import FeedbackProductSerializer
 from api.v1.product import services
 from api.v1.product.serializers.image import ProductImageSerializer
 from api.v1.product.serializers.common import ProductOptionListSerializer
@@ -49,6 +50,7 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
     siblings = ProductSiblingsSerializer(many=True)
     mainCard = serializers.BooleanField(source="main_card")
     siblingName = serializers.CharField(source="sibling_name")
+    feedbacks = FeedbackProductSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product

@@ -36,7 +36,7 @@ class Cart(Base, TimeStampedBase):
     @property
     def total_quantity(self):
         """Count the total number of items in the cart."""
-        return self.items.aggregate(
+        return self.cart_items.aggregate(
             total_quantity=ExpressionWrapper(
                 Sum("quantity"), output_field=PositiveIntegerField()
             )
@@ -45,7 +45,7 @@ class Cart(Base, TimeStampedBase):
     @property
     def total_price(self):
         """Calculate the total cost of items in the cart."""
-        return self.items.aggregate(
+        return self.cart_items.aggregate(
             total_price=Sum(
                 ExpressionWrapper(
                     F("quantity") * F("price"), output_field=DecimalField()
