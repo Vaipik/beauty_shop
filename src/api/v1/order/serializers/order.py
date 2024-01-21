@@ -1,16 +1,18 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers, status
 
+from api.base.serializers import TimeStampedSerializer
 from api.v1.order import services
 from core.order.models import Order
 from utils.phone import is_phone_number_valid
+
 from .item import OrderItemSerializer
 
 
 User = get_user_model()
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderSerializer(TimeStampedSerializer, serializers.ModelSerializer):
     """Serializer that used for Orders."""
 
     firstName = serializers.CharField(source="first_name")
@@ -32,6 +34,8 @@ class OrderSerializer(serializers.ModelSerializer):
             "address",
             "userId",
             "items",
+            "createdAt",
+            "updatedAt",
         ]
         read_only_fields = ["id", "status", "isPaid"]
 
