@@ -1,7 +1,6 @@
 from api.base.permissions import StaffPermission
 from api.v1.order import services
 from api.v1.order.filters import OrderFilter
-from api.v1.order.paginator import PaginationForOrder
 from api.v1.order.serializers import OrderSerializer, OrderUpdateSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions
@@ -24,7 +23,6 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     http_method_names = ["get", "post", "patch"]
     serializer_class = OrderSerializer
-    pagination_class = PaginationForOrder
     filterset_class = OrderFilter
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["created_at", "updated_at"]
