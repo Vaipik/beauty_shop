@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.base.models import Base, TimeStampedBase
@@ -18,11 +18,11 @@ class Order(Base, TimeStampedBase):
     class OrderStatus(models.TextChoices):
         """ENUM for order status."""
 
-        NEW = "N", _("New")
-        PROCESSING = "P", _("Processing")
-        DELIVERY = "D", _("Delivery")
-        SUCCESS = "S", _("Success")
-        CANCELLED = "C", _("Cancelled")
+        NEW = 0, _("New")
+        PROCESSING = 1, _("Processing")
+        DELIVERY = 2, _("Delivery")
+        SUCCESS = 3, _("Success")
+        CANCELLED = 4, _("Cancelled")
 
     first_name = models.CharField(
         max_length=constants.FIRST_NAME_MAX_LENGTH,
@@ -45,8 +45,7 @@ class Order(Base, TimeStampedBase):
         verbose_name=_("Mobile phone"),
         null=False,
     )
-    status = models.CharField(
-        max_length=1,
+    status = models.PositiveSmallIntegerField(
         verbose_name=_("Status"),
         choices=OrderStatus.choices,
         default=OrderStatus.NEW,

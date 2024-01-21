@@ -25,3 +25,19 @@ class OwnerPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         """Check that user are the owner."""
         return obj.pk == request.user.pk
+
+
+class StaffPermission(permissions.BasePermission):
+    """Permission class to control access for staff members."""
+
+    def has_permission(self, request, view):
+        """Verify that request user has an admin or manager role."""
+        user: User = request.user
+        if request.auth:
+            return user.role in {User.UserRoles.ADMIN, User.UserRoles.MANAGER}
+
+    def has_object_permission(self, request, view, obj):
+        """Verify that request user has an admin or manager role for specific object."""
+        user: User = request.user
+        if request.auth:
+            return user.role in {User.UserRoles.ADMIN, User.UserRoles.MANAGER}
