@@ -6,25 +6,37 @@ from core.order.models import Order
 class OrderFilter(filters.FilterSet):
     """The class for order filtering."""
 
-    status = filters.CharFilter(field_name="status", lookup_expr="iexact")
-    # status = filters.ChoiceFilter(choices=Order.OrderStatus.choices)
-    user = filters.CharFilter(field_name="user__username", lookup_expr="iexact")
-    created_date = filters.DateTimeFilter(field_name="created_at", lookup_expr="date")
-    created_range = filters.DateTimeFromToRangeFilter(
-        field_name="created_at",
+    status = filters.MultipleChoiceFilter(
+        choices=Order.OrderStatus.choices,
     )
-    updated_date = filters.DateTimeFilter(field_name="updated_at", lookup_expr="date")
-    updated_range = filters.DateTimeFromToRangeFilter(
+    username = filters.CharFilter(
+        field_name="user__username",
+        lookup_expr="icontains",
+        label="Case-sensitive containment username.",
+    )
+    created_at = filters.DateTimeFilter(
+        field_name="created_at",
+        lookup_expr="date",
+        label="Exact date",
+    )
+    created = filters.DateTimeFromToRangeFilter(
+        field_name="created_at",
+        label="Range for lookup.",
+    )
+    updated_at = filters.DateTimeFilter(
         field_name="updated_at",
+        lookup_expr="date",
+        label="Exact date.",
+    )
+    updated = filters.DateTimeFromToRangeFilter(
+        field_name="updated_at",
+        label="Range for lookup.",
     )
 
     class Meta:
         model = Order
         fields = [
             "status",
-            "user",
-            "created_date",
-            "created_range",
-            "updated_date",
-            "updated_range",
+            "created_at",
+            "updated_at",
         ]
