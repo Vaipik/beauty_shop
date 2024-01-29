@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import (
-    Sum,
+    DecimalField,
     ExpressionWrapper,
     F,
-    DecimalField,
     PositiveIntegerField,
-    UniqueConstraint,
     Q,
+    Sum,
+    UniqueConstraint,
 )
 
 from core.base.models import Base, TimeStampedBase
@@ -36,7 +36,7 @@ class Cart(Base, TimeStampedBase):
     @property
     def total_quantity(self):
         """Count the total number of items in the cart."""
-        return self.cart_items.aggregate(
+        return self.items.aggregate(
             total_quantity=ExpressionWrapper(
                 Sum("quantity"), output_field=PositiveIntegerField()
             )
@@ -45,7 +45,7 @@ class Cart(Base, TimeStampedBase):
     @property
     def total_price(self):
         """Calculate the total cost of items in the cart."""
-        return self.cart_items.aggregate(
+        return self.items.aggregate(
             total_price=Sum(
                 ExpressionWrapper(
                     F("quantity") * F("price"), output_field=DecimalField()

@@ -2,8 +2,8 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from core.product import constants
 from core.base.models import Base, TimeStampedBase
+from core.product import constants
 
 
 class Product(Base, TimeStampedBase):
@@ -15,6 +15,13 @@ class Product(Base, TimeStampedBase):
         IN_STOCK = "I", _("In stock")
         OUT_OF_STOCK = "O", _("Out of stock")
         PENDING = "P", _("Expected")
+
+    class ProductCurrencyChoice(models.TextChoices):
+        """Enum for currency choice."""
+
+        UAH = "UAH", "Ukrainian Hryvnia"
+        USD = "USD", "United States Dollar"
+        EUR = "EUR", "Euro"
 
     name = models.CharField(
         max_length=constants.PRODUCT_NAME_MAX_LENGTH, verbose_name=_("Name")
@@ -33,6 +40,12 @@ class Product(Base, TimeStampedBase):
         decimal_places=2,
         null=True,
         blank=True,
+    )
+    currency = models.CharField(
+        verbose_name=_("Currency"),
+        max_length=3,
+        choices=ProductCurrencyChoice.choices,
+        default=ProductCurrencyChoice.UAH,
     )
     sku = models.PositiveIntegerField(
         verbose_name=_("Stock keeping unit"),

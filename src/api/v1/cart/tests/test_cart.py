@@ -103,3 +103,22 @@ def test_delete_cart_after_order(api_client, auth, cart, user):
     cart.refresh_from_db()
     assert not cart.is_active
     assert user.carts.filter(is_active=True).count() == 0
+
+
+def test_cartitem_cost(cartitem):
+    """Check the cost of a CartItem is calculated correctly."""
+    assert cartitem.cost == cartitem.price * cartitem.quantity
+
+
+def test_cart_total_quantity(cart_with_items):
+    """Check the total quantity of items in the cart is calculated correctly."""
+    assert cart_with_items.total_quantity == sum(
+        i.quantity for i in cart_with_items.items.all()
+    )
+
+
+def test_cart_total_price(cart_with_items):
+    """Check the total price of items in the cart is calculated correctly."""
+    assert cart_with_items.total_price == sum(
+        i.price * i.quantity for i in cart_with_items.items.all()
+    )
