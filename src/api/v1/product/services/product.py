@@ -3,9 +3,12 @@ from uuid import UUID
 
 from django.db import transaction
 from django.db.models import QuerySet
-from django.db.models.query import RawQuerySet, Prefetch
+from django.db.models.query import Prefetch, RawQuerySet
+from django.shortcuts import get_object_or_404
 
-from core.product.models import Product, ProductOption, ProductImage
+from core.product.models import Product, ProductImage, ProductOption
+from core.product.models.currency import Currency, ProductCurrency
+
 from .image import update_product_images
 
 
@@ -150,7 +153,10 @@ def update_siblings(product: Product, siblings: Collection[dict]) -> None:
 
 @transaction.atomic
 def create_product(
-    validated_data: dict, images: Collection[dict], siblings: Collection[dict]
+    validated_data: dict,
+    images: Collection[dict],
+    siblings: Collection[dict],
+    price: Collection[dict],
 ) -> Product:
     """Create a product instance with nested data in one transaction.
 
@@ -166,8 +172,22 @@ def create_product(
     update_product_images(images, product)
     product.categories.add(*categories)
     product.options.add(*options)
-
+    update_or_create_price(product, price)
     return product
+
+
+def update_or_create_price(product, price):
+    """Create or update the prices for a given product instance."""
+    for pr in price:
+        currency_id = pr.pop("currency_id")
+        currency = get_object_or_404(Currency, pk=currency_id)
+        value = pr.pop("value")
+        product_currency, created = ProductCurrency.objects.get_or_create(
+            currency=currency, product=product, defaults={"value": value}
+        )
+        if not created:
+            product_currency.value = value
+            product_currency.save()
 
 
 @transaction.atomic
@@ -176,6 +196,7 @@ def update_product(
     validated_data: dict,
     images: Collection[dict],
     siblings: Collection[dict],
+    price: Collection[dict],
 ) -> Product:
     """Perform a data update for product in database.
 
@@ -188,6 +209,7 @@ def update_product(
     manufacturer = validated_data.pop("manufacturer", None)
     categories = validated_data.pop("categories", None)
     options = validated_data.pop("options", None)
+    update_or_create_price(product, price)
 
     if categories:
         product.categories.add(*categories)

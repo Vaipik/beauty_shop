@@ -4,8 +4,9 @@ from rest_framework import serializers
 from api.base.serializers import TimeStampedSerializer
 from api.v1.feedback.serializers import FeedbackProductSerializer
 from api.v1.product import services
-from api.v1.product.serializers.image import ProductImageSerializer
 from api.v1.product.serializers.common import ProductOptionListSerializer
+from api.v1.product.serializers.currency import ProductCurrencySerializer
+from api.v1.product.serializers.image import ProductImageSerializer
 from api.v1.product.serializers.manufacturer import ProductManufacturerSerializer
 from core.product.models import Product
 
@@ -51,6 +52,7 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
     mainCard = serializers.BooleanField(source="main_card")
     siblingName = serializers.CharField(source="sibling_name")
     feedbacks = FeedbackProductSerializer(many=True, read_only=True)
+    price = ProductCurrencySerializer(many=True)
 
     class Meta:
         model = Product
@@ -61,13 +63,17 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
         """To create a product instance with nested serializers."""
         images = validated_data.pop("images")
         siblings = validated_data.pop("siblings")
-        return services.create_product(validated_data, images, siblings)
+        price = validated_data.pop("price")
+        return services.create_product(validated_data, images, siblings, price)
 
     def update(self, instance, validated_data) -> Product:
         """Update product."""
         images = validated_data.pop("images", None)
         siblings = validated_data.pop("siblings", None)
-        return services.update_product(instance, validated_data, images, siblings)
+        price = validated_data.pop("price", None)
+        return services.update_product(
+            instance, validated_data, images, siblings, price
+        )
 
     def validate_images(self, images: dict) -> dict | None:
         """If user didn't upload new images performs a rearrange of existing images."""
