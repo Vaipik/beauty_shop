@@ -6,8 +6,13 @@ from django.db.models import QuerySet
 from django.db.models.query import Prefetch, RawQuerySet
 from django.shortcuts import get_object_or_404
 
-from core.product.models import Product, ProductImage, ProductOption
-from core.product.models.currency import Currency, ProductCurrency
+from core.product.models import (
+    Currency,
+    Product,
+    ProductCurrency,
+    ProductImage,
+    ProductOption,
+)
 
 from .image import update_product_images
 

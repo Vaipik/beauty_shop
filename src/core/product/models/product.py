@@ -29,9 +29,7 @@ class Product(Base, TimeStampedBase):
     price = models.ManyToManyField(
         to="Currency",
         through="ProductCurrency",
-        related_name="price_products",
-        null=True,
-        blank=True,
+        related_name="products",
     )
     sku = models.PositiveIntegerField(
         verbose_name=_("Stock keeping unit"),

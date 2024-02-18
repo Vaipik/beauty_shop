@@ -114,6 +114,7 @@ class ProductListResponseSerializer(serializers.ModelSerializer):
 
     images = ProductImageSerializer(many=True, read_only=True)
     siblings = ProductSiblingsWithImagesSerializer(many=True)
+    price = ProductCurrencySerializer(many=True)
 
     class Meta:
         model = Product

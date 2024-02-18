@@ -28,7 +28,7 @@ class ProductCurrency(Base, TimeStampedBase):
     )
 
     class Meta:
-        db_table = "product_currency"
+        db_table = "product_prices"
         verbose_name = _("Currency for product")
         verbose_name_plural = _("Currencies for product")
         constraints = [
@@ -40,7 +40,7 @@ class ProductCurrency(Base, TimeStampedBase):
         ]
 
 
-class Currency(Base, TimeStampedBase):
+class Currency(Base):
     """Describe currency."""
 
     name = models.CharField(
@@ -49,10 +49,11 @@ class Currency(Base, TimeStampedBase):
     abbreviation = models.CharField(
         max_length=constants.CURRENCY_ABBREVIATION_MAX_LENGTH,
         verbose_name=_("abbreviation"),
+        unique=True,
     )
 
     class Meta:
-        db_table = "currency"
+        db_table = "currencies"
         verbose_name = _("Currency")
         verbose_name_plural = _("Currencies")
 

@@ -4,7 +4,6 @@ from rest_framework.routers import SimpleRouter
 from .views import (
     CurrencyViewSet,
     ProductCategoryViewSet,
-    ProductCurrencyViewSet,
     ProductImageViewSet,
     ProductManufacturerViewSet,
     ProductOptionViewSet,
@@ -37,12 +36,6 @@ currency_router.register(
     prefix="currencies", viewset=CurrencyViewSet, basename="currencies"
 )
 
-product_currency_router = SimpleRouter()
-product_currency_router.register(
-    prefix="product_currencies",
-    viewset=ProductCurrencyViewSet,
-    basename="product_currencies",
-)
 
 app_name = "product"
 
@@ -53,5 +46,4 @@ urlpatterns = [
     path("", include(image_router.urls)),
     path("", include(manufacturer_router.urls)),
     path("", include(currency_router.urls)),
-    path("", include(product_currency_router.urls)),
 ]
