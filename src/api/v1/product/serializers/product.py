@@ -1,62 +1,53 @@
-from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from api.base.serializers import TimeStampedSerializer
 from api.v1.feedback.serializers import FeedbackProductSerializer
 from api.v1.product import services
-from api.v1.product.serializers.common import ProductOptionListSerializer
-from api.v1.product.serializers.currency import ProductCurrencySerializer
-from api.v1.product.serializers.image import ProductImageSerializer
-from api.v1.product.serializers.manufacturer import ProductManufacturerSerializer
-from core.product.models import Product
+from api.v1.product.serializers import ProductCurrencySerializer, ProductImageSerializer
+from core.product.models import Product, ProductItem
 
 
-class ProductSiblingsSerializer(serializers.ModelSerializer):
-    """Provide a link to product sibling. Should be used in detail view only."""
+class ProductItemSerializer(TimeStampedSerializer, serializers.ModelSerializer):
+    """Exact product item."""
 
-    id = serializers.UUIDField(read_only=False)
-    name = serializers.CharField(source="sibling_name", read_only=True)
-
-    class Meta:
-        model = Product
-        fields = ["id", "name"]
-        read_only_fields = ["name"]
-
-
-class ProductSiblingsWithImagesSerializer(ProductSiblingsSerializer):
-    """Extend serializer and add extra fields for siblings. List view only."""
-
-    images = ProductImageSerializer(many=True, read_only=True)
-
-    class Meta(ProductSiblingsSerializer.Meta):
-        fields = ProductSiblingsSerializer.Meta.fields + [
-            "images",
-            "sku",
-            "status",
-            "price",
-        ]
-        read_only_fields = ProductSiblingsSerializer.Meta.read_only_fields + [
-            "images",
-            "sku",
-            "status",
-            "price",
-        ]
-
-
-class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
-    """Serializer to create a new product with nested images, options and cats."""
-
-    images = ProductImageSerializer(many=True, read_only=False, allow_null=True)
-    isLuxury = serializers.BooleanField(source="is_luxury")
-    siblings = ProductSiblingsSerializer(many=True)
-    mainCard = serializers.BooleanField(source="main_card")
-    siblingName = serializers.CharField(source="sibling_name")
     feedbacks = FeedbackProductSerializer(many=True, read_only=True)
+    images = ProductImageSerializer(many=True, read_only=False, allow_null=True)
     price = ProductCurrencySerializer(many=True)
 
+    # @extend_schema_field(ProductOptionListSerializer(many=True))
+    # def get_options(self, instance: Product):
+    #     """Return product options in nested format {parent: [child]}."""
+    #     options = services.get_product_options(instance.pk)
+    #     return [{"name": option.name, "options": option.options} for option in options
+
+    class Meta:
+        model = ProductItem
+        fields = [
+            "id",
+            "description",
+            "name",
+            "price",
+            "rating",
+            "sku",
+            "categories",
+            "options",
+            "images",
+            "feedbacks",
+            "createdAt",
+            "updatedAt",
+        ]
+        exclude_fields = ["created_at", "updated_at"]
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    """Serializer to create a new product with nested images, options and cats."""
+
+    isLuxury = serializers.BooleanField(source="is_luxury")
+    items = ProductItemSerializer(many=True)
+
     class Meta:
         model = Product
-        exclude = ["created_at", "updated_at", "is_luxury", "main_card", "sibling_name"]
+        exclude = ["is_luxury"]
         read_only_fields = ["id"]
 
     def create(self, validated_data) -> Product:
@@ -87,35 +78,14 @@ class ProductSerializer(TimeStampedSerializer, serializers.ModelSerializer):
         return images
 
 
-class ProductDetailResponseSerializer(serializers.ModelSerializer):
-    """Detailed view of product with full list of images and options."""
-
-    images = ProductImageSerializer(many=True, read_only=True)
-    manufacturer = ProductManufacturerSerializer()
-    options = serializers.SerializerMethodField()
-    siblingName = serializers.CharField(source="sibling_name")
-
-    class Meta:
-        model = Product
-        exclude = ["id", "created_at", "updated_at", "sibling_name"]
-
-    @extend_schema_field(ProductOptionListSerializer(many=True))
-    def get_options(self, instance: Product):
-        """Return product options in nested format {parent: [child]}."""
-        options = services.get_product_options(instance.pk)
-        return [{"name": option.name, "options": option.options} for option in options]
-
-
 class ProductListResponseSerializer(serializers.ModelSerializer):
     """Specified for list display view.
 
     Primary usage is at the main page to obtain product list with only one image.
     """
 
-    images = ProductImageSerializer(many=True, read_only=True)
-    siblings = ProductSiblingsWithImagesSerializer(many=True)
-    price = ProductCurrencySerializer(many=True)
+    items = ProductItemSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = ["id", "name", "price", "rating", "sku", "images", "siblings"]
+        fields = ["id", "name", "items"]

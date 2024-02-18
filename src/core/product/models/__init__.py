@@ -3,7 +3,7 @@ from .currency import Currency, ProductCurrency
 from .image import ProductImage
 from .manufacturer import ProductManufacturer
 from .option import ProductOption
-from .product import Product
+from .product import Product, ProductItem
 
 __all__ = [
     "Currency",
@@ -12,5 +12,6 @@ __all__ = [
     "ProductCurrency",
     "ProductOption",
     "ProductImage",
+    "ProductItem",
     "ProductManufacturer",
 ]

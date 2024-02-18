@@ -16,10 +16,9 @@ class ProductCurrencySerializer(serializers.ModelSerializer):
     """Serializer for ProductCurrency model."""
 
     currencyId = serializers.UUIDField(source="currency_id", write_only=True)
-    productId = serializers.UUIDField(source="product_id", write_only=True)
-    name = serializers.CharField(source="currency.name")
+    name = serializers.CharField(source="currency.name", read_only=True)
 
     class Meta:
         model = ProductCurrency
-        fields = ["id", "currencyId", "productId", "value", "name"]
+        fields = ["id", "currencyId", "value", "name"]
         read_only_fields = ["id"]

@@ -1,5 +1,5 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -21,7 +21,7 @@ class Feedback(Base, TimeStampedBase):
         ]
     )
     product = models.ForeignKey(
-        to="product.Product", related_name="feedbacks", on_delete=models.CASCADE
+        to="product.ProductItem", related_name="feedbacks", on_delete=models.CASCADE
     )
     user = models.ForeignKey(
         to=User, on_delete=models.DO_NOTHING, related_name="feedbacks"

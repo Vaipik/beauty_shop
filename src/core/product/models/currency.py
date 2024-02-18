@@ -16,7 +16,7 @@ class ProductCurrency(Base, TimeStampedBase):
         verbose_name=_("Currency"),
     )
     product = models.ForeignKey(
-        to="Product",
+        to="ProductItem",
         on_delete=models.CASCADE,
         related_name="product_currencies",
         verbose_name=_("Product"),
