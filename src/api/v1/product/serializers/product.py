@@ -38,6 +38,11 @@ class ProductItemSerializer(TimeStampedSerializer, serializers.ModelSerializer):
         ]
         exclude_fields = ["created_at", "updated_at"]
 
+    def create(self, validated_data):  # noqa D102
+        images = validated_data.pop("images")
+        price = validated_data.pop("price")
+        return services.create_product(validated_data, images, price)
+
 
 class ProductSerializer(serializers.ModelSerializer):
     """Serializer to create a new product with nested images, options and cats."""
@@ -52,10 +57,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data) -> Product:
         """To create a product instance with nested serializers."""
-        images = validated_data.pop("images")
-        siblings = validated_data.pop("siblings")
-        price = validated_data.pop("price")
-        return services.create_product(validated_data, images, siblings, price)
+        pass
+        # items = validated_data.pop("items")
+        # product = services.create_product
 
     def update(self, instance, validated_data) -> Product:
         """Update product."""
