@@ -1,11 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions
+from rest_framework import permissions, viewsets
 from rest_framework.filters import OrderingFilter
 
-from api.base.permissions import StaffPermission, OwnerPermission
+from api.base.permissions import OwnerPermission, StaffPermission
 from api.v1.order import services
 from api.v1.order.filters import OrderFilter
 from api.v1.order.serializers import OrderSerializer, OrderUpdateSerializer
+from core.order.models import Order
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -28,6 +29,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):  # noqa D102
+        if getattr(self, "swagger_fake_view", False):  # drf-yasg comp
+            return Order.objects.none()
         if self.action == "list":
             return services.get_orders_list()
         if self.action in {"retrieve", "partial_update", "destroy"}:
@@ -42,6 +45,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """## New order creation are able to any user even non-authenticated."""
+        return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """## To perform this action user must be a staff."""

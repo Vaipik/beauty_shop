@@ -16,7 +16,8 @@ def get_list_products() -> QuerySet[Product]:
     Note that if product have no images attached than this product will not be listed
     in queryset. Same is for siblings images.
     """
-    return _get_related_list_view(Product.objects.filter(main_card=True))
+    # return _get_related_list_view(Product.objects.prefetch_related("product_items"))
+    return Product.objects.prefetch_related("product_items").all()
 
 
 def get_detail_product(pk: UUID) -> QuerySet[Product]:
@@ -28,13 +29,7 @@ def get_detail_product(pk: UUID) -> QuerySet[Product]:
     :return: queryset with the only ony product.
     """
     return (
-        Product.objects.prefetch_related(
-            "images",
-            "options",
-            "siblings",
-            "categories",
-            "feedbacks",
-        )
+        Product.objects.prefetch_related("product_items")
         .select_related("manufacturer")
         .filter(pk=pk)
     )
@@ -92,7 +87,7 @@ def create_product(
         name=validated_data["name"],
         description=validated_data["description"],
         is_luxury=validated_data["is_luxury"],
-        manufacturer_id=validated_data["manufacturer"]["id"],
+        # manufacturer_id=validated_data["manufacturer"]["id"],
     )
     create_product_items(product, items)
     return product
@@ -110,7 +105,7 @@ def _create_product_item(product: Product, item: dict) -> ProductItem:
 
     :param product: existing product instance.
     :param item: product_item attrs.
-    :return: ProductItem instanche withou calling save()
+    :return: ProductItem instance without calling save()
     """
     images = item.pop("images")
     options = item.pop("options")
@@ -143,41 +138,53 @@ def create_prices(product: ProductItem, prices: list[dict]) -> None:
 def update_product(
     product: Product,
     validated_data: dict,
-    images: Collection[dict],
-    siblings: Collection[dict],
-    price: Collection[dict],
+    items: list[dict],
 ) -> Product:
-    """Perform a data update for product in database.
+    """Create a product instance with nested data in one transaction."""
+    if validated_data:
+        [setattr(product, attr, validated_data[attr]) for attr in validated_data]
 
-    :param product: instance that should be updated.
-    :param validated_data: validated data obtained from serializer.
-    :param images: images with ordering and ids.
-    :param siblings: product siblings that must be updated.
-    :return:
+    update_product_items(items)
+    product.save()
+    return product
+
+
+def update_prices(product: ProductItem, prices: list[dict]) -> None:
+    """Create prices for a product item instance."""
+    for price in prices:
+        currency = ProductCurrency.objects.filter(
+            product=product, currency_id=price["currency_id"]
+        )
+        currency.value = price["value"]
+        currency.save()
+
+
+def update_product_items(items: list[dict]) -> None:
+    """Update all product items."""
+    [_update_product_item(item) for item in items]
+
+
+def _update_product_item(item: dict):
+    """For inner use only. Used in bulk_create to create a product and variants.
+
+    :param item: product_item attrs.
+    :return: ProductItem instance without calling save()
     """
-    manufacturer = validated_data.pop("manufacturer", None)
-    categories = validated_data.pop("categories", None)
-    options = validated_data.pop("options", None)
-    update_or_create_price(product, price)
-
-    if categories:
-        product.categories.add(*categories)
-    if options:
-        product.options.add(*options)
-    if manufacturer:
-        product.manufacturer = manufacturer
-    if siblings:
-        update_siblings(product, siblings)
-
-    product.images.update(img_order=None)
+    images = item.pop("images")
+    options = item.pop("options")
+    categories = item.pop("categories")
+    prices: list[dict] = item.pop("price")
+    product_item = ProductItem.objects.get(item["id"])
+    [setattr(product_item, attr, item[attr]) for attr in item]
+    product_item.options.add(*options)
+    product_item.categories.add(*categories)
+    update_prices(product_item, prices)
+    product_item.images.update(img_order=None)
     for image in images:
         img_order = image["img_order"]
-        product.images.filter(id=image["id"]).update(img_order=img_order)
-    for field, value in validated_data.items():
-        setattr(product, field, value)
-    product.save()
-
-    return product
+        product_item.images.filter(id=image["id"]).update(img_order=img_order)
+    product_item.save()
+    return product_item
 
 
 def delete_product(instance: Product) -> None:

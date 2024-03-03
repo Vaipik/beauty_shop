@@ -1,9 +1,9 @@
-from rest_framework import permissions
-from rest_framework import viewsets, status
+from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 
 from api.v1.cart.serializers.cart import CartSerializer
-from api.v1.cart.services.cart import get_detail_cart, delete_cart
+from api.v1.cart.services.cart import delete_cart, get_detail_cart
+from core.cart.models import Cart
 
 
 class CartViewSet(viewsets.ModelViewSet):
@@ -15,6 +15,8 @@ class CartViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Return the queryset for the view."""
+        if getattr(self, "swagger_fake_view", False):  # drf-yasg comp
+            return Cart.objects.none()
         if self.action in {"retrieve", "partial_update", "destroy"}:
             return get_detail_cart(pk=self.kwargs["pk"])
 

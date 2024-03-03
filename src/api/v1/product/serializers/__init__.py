@@ -9,7 +9,7 @@ from .image import (
 )
 from .manufacturer import ProductManufacturerSerializer
 from .option import ProductOptionBindedSerializer, ProductOptionCreateResponseSeriliazer
-from .product import ProductListResponseSerializer, ProductSerializer
+from .product import ProductSerializer
 
 __all__ = [
     # common
@@ -31,5 +31,4 @@ __all__ = [
     "ProductOptionBindedSerializer",
     # product
     "ProductSerializer",
-    "ProductListResponseSerializer",
 ]
