@@ -87,7 +87,7 @@ def create_product(
         name=validated_data["name"],
         description=validated_data["description"],
         is_luxury=validated_data["is_luxury"],
-        # manufacturer_id=validated_data["manufacturer"]["id"],
+        manufacturer_id=validated_data["manufacturer"],
     )
     create_product_items(product, items)
     return product
