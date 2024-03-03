@@ -38,17 +38,12 @@ class ProductItemSerializer(TimeStampedSerializer, serializers.ModelSerializer):
         ]
         exclude_fields = ["created_at", "updated_at"]
 
-    def create(self, validated_data):  # noqa D102
-        images = validated_data.pop("images")
-        price = validated_data.pop("price")
-        return services.create_product(validated_data, images, price)
-
 
 class ProductSerializer(serializers.ModelSerializer):
     """Serializer to create a new product with nested images, options and cats."""
 
     isLuxury = serializers.BooleanField(source="is_luxury")
-    items = ProductItemSerializer(many=True)
+    items = ProductItemSerializer(many=True, source="product_items")
 
     class Meta:
         model = Product
@@ -57,39 +52,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data) -> Product:
         """To create a product instance with nested serializers."""
-        pass
-        # items = validated_data.pop("items")
-        # product = services.create_product
+        items = validated_data.pop("items")
+        product = services.create_product(validated_data, items)
+        return product
 
     def update(self, instance, validated_data) -> Product:
         """Update product."""
-        images = validated_data.pop("images", None)
-        siblings = validated_data.pop("siblings", None)
-        price = validated_data.pop("price", None)
-        return services.update_product(
-            instance, validated_data, images, siblings, price
-        )
-
-    def validate_images(self, images: dict) -> dict | None:
-        """If user didn't upload new images performs a rearrange of existing images."""
-        if not images:
-            raise serializers.ValidationError("You need to upload images.")
-
-        for idx, image in enumerate(sorted(images, key=lambda x: x["img_order"]), 1):
-            if idx != image["img_order"]:
-                raise serializers.ValidationError("Image ordering must be consequent")
-
-        return images
-
-
-class ProductListResponseSerializer(serializers.ModelSerializer):
-    """Specified for list display view.
-
-    Primary usage is at the main page to obtain product list with only one image.
-    """
-
-    items = ProductItemSerializer(many=True)
-
-    class Meta:
-        model = Product
-        fields = ["id", "name", "items"]
+        items = validated_data.pop("items", None)
+        return services.update_product(instance, validated_data, items)
