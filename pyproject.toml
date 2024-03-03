@@ -51,3 +51,5 @@ ignore = ["D100", "D104", "D105", "D106", "D107", "D104", "D401", "F821",]
 DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py"]
 pythonpath = "src"
+[tool.isort]
+profile = "black"

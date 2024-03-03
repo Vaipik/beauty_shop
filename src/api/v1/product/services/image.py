@@ -2,7 +2,7 @@ from typing import Collection
 
 from django.db.models import QuerySet
 
-from core.product.models import Product, ProductImage
+from core.product.models import ProductImage, ProductItem
 
 
 def get_all_images_related_to_products() -> QuerySet[ProductImage]:
@@ -15,7 +15,7 @@ def get_all_images_not_related_to_products() -> QuerySet[ProductImage]:
     return ProductImage.objects.select_related("product").filter(product__isnull=True)
 
 
-def update_product_images(images: Collection, product: Product) -> None:
+def update_product_item_images(images: Collection[dict], product: ProductItem) -> None:
     """Create images for given product."""
     for image in images:
         pk = image.pop("id")

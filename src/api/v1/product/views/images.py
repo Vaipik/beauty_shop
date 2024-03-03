@@ -1,7 +1,8 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets, parsers, status
+from rest_framework import parsers, permissions, status, viewsets
 from rest_framework.response import Response
 
+from api.base.permissions import StaffPermission
 from api.v1.product.serializers import (
     ProductImageCreateRequestSerializer,
     ProductImageCreateResponseSerializer,
@@ -16,6 +17,14 @@ class ProductImageViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "delete"]
     queryset = ProductImage.objects.all()
     parser_classes = [parsers.JSONParser, parsers.MultiPartParser]
+
+    def get_permissions(self):
+        """To use a custom permissions."""
+        if self.action in {"create", "partial_update", "destroy"}:
+            permission_classes = [StaffPermission]
+        else:
+            permission_classes = [permissions.AllowAny]
+        return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):  # noqa D102
         if self.action == "create":

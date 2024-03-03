@@ -2,8 +2,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from treebeard.mp_tree import MP_Node
 
-from core.product import constants
 from core.base.models import Base
+from core.product import constants
 
 
 class ProductCategory(Base, MP_Node):
@@ -15,7 +15,7 @@ class ProductCategory(Base, MP_Node):
     )
     node_order_by = ["name"]
     options = models.ManyToManyField(
-        to="product.ProductOption",
+        to="ProductOption",
         related_name="categories",
         db_table="category_options_m2m",
         blank=True,

@@ -1,12 +1,13 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from .views import (
-    ProductViewSet,
-    ProductOptionViewSet,
+    CurrencyViewSet,
     ProductCategoryViewSet,
     ProductImageViewSet,
     ProductManufacturerViewSet,
+    ProductOptionViewSet,
+    ProductViewSet,
 )
 
 manufacturer_router = SimpleRouter()
@@ -30,6 +31,11 @@ option_router.register(
 image_router = SimpleRouter()
 image_router.register(prefix="images", viewset=ProductImageViewSet, basename="images")
 
+currency_router = SimpleRouter()
+currency_router.register(
+    prefix="currencies", viewset=CurrencyViewSet, basename="currencies"
+)
+
 
 app_name = "product"
 
@@ -39,4 +45,5 @@ urlpatterns = [
     path("", include(option_router.urls)),
     path("", include(image_router.urls)),
     path("", include(manufacturer_router.urls)),
+    path("", include(currency_router.urls)),
 ]

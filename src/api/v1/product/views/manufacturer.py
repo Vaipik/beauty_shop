@@ -1,17 +1,17 @@
 from uuid import UUID
 
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.product.models import ProductManufacturer
-
+from api.base.permissions import StaffPermission
 from api.v1.product import services
 from api.v1.product.serializers import (
-    ProductManufacturerSerializer,
     ProductListResponseSerializer,
+    ProductManufacturerSerializer,
 )
+from core.product.models import ProductManufacturer
 
 
 class ProductManufacturerViewSet(viewsets.ModelViewSet):
@@ -20,6 +20,14 @@ class ProductManufacturerViewSet(viewsets.ModelViewSet):
     serializer_class = ProductManufacturerSerializer
     queryset = ProductManufacturer.objects.all()
     http_method_names = ["get", "post", "patch", "delete"]
+
+    def get_permissions(self):
+        """To use a custom permissions."""
+        if self.action in {"create", "partial_update", "destroy"}:
+            permission_classes = [StaffPermission]
+        else:
+            permission_classes = [permissions.AllowAny]
+        return [permission() for permission in permission_classes]
 
     def get_queryset(self):  # noqa D102
         if self.action == "products":

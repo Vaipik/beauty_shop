@@ -1,8 +1,9 @@
-from .product import ProductViewSet
 from .category import ProductCategoryViewSet
-from .option import ProductOptionViewSet
+from .currency import CurrencyViewSet
 from .images import ProductImageViewSet
 from .manufacturer import ProductManufacturerViewSet
+from .option import ProductOptionViewSet
+from .product import ProductViewSet
 
 __all__ = [
     "ProductViewSet",
@@ -10,4 +11,5 @@ __all__ = [
     "ProductOptionViewSet",
     "ProductImageViewSet",
     "ProductManufacturerViewSet",
+    "CurrencyViewSet",
 ]

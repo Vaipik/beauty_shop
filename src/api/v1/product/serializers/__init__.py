@@ -1,18 +1,15 @@
 from .category import ProductCategoryCreateResponseSeriliazer
-from .common import TreeListResponseSerializer, TreeCreateUpdateSerializer
+from .common import TreeCreateUpdateSerializer, TreeListResponseSerializer
+from .currency import ProductCurrencySerializer
 from .image import (
     ProductImageCreateRequestSerializer,
-    ProductImageSerializer,
     ProductImageCreateResponseSerializer,
     ProductImageListSerializer,
+    ProductImageSerializer,
 )
 from .manufacturer import ProductManufacturerSerializer
-from .option import ProductOptionCreateResponseSeriliazer, ProductOptionBindedSerializer
-from .product import (
-    ProductDetailResponseSerializer,
-    ProductListResponseSerializer,
-    ProductSerializer,
-)
+from .option import ProductOptionBindedSerializer, ProductOptionCreateResponseSeriliazer
+from .product import ProductListResponseSerializer, ProductSerializer
 
 __all__ = [
     # common
@@ -20,6 +17,8 @@ __all__ = [
     "TreeListResponseSerializer",
     # category
     "ProductCategoryCreateResponseSeriliazer",
+    # currency
+    "ProductCurrencySerializer",
     # image
     "ProductImageCreateRequestSerializer",
     "ProductImageCreateResponseSerializer",
@@ -32,6 +31,5 @@ __all__ = [
     "ProductOptionBindedSerializer",
     # product
     "ProductSerializer",
-    "ProductDetailResponseSerializer",
     "ProductListResponseSerializer",
 ]
