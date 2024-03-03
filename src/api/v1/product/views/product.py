@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from api.base.permissions import StaffPermission
 from api.v1.product import services
 from api.v1.product.filters import ProductFilter
-from api.v1.product.serializers import ProductListResponseSerializer, ProductSerializer
+from api.v1.product.serializers import ProductSerializer
+from core.product.models import Product
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -12,6 +13,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     http_method_names = ["get", "post", "patch", "delete"]
     filterset_class = ProductFilter
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
 
     def get_permissions(self):
         """To use a custom permissions."""
@@ -21,23 +24,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
 
-    def get_serializer_class(self):
-        """Different endpoints require different serializers."""
-        if self.action == "list":
-            return ProductListResponseSerializer
-        if self.action in {"create", "retrieve", "partial_update"}:
-            return ProductSerializer
-        return super().get_serializer_class()
-
-    def get_queryset(self):
-        """Different serializers require different querysets."""
-        if self.action == "list":
-            return services.get_list_products()
-        if self.action in ["retrieve", "destroy", "partial_update"]:
-            return services.get_detail_product(self.kwargs["pk"])
-        return super().get_queryset()
-
-    def list(self, request):  # noqa D102
+    def list(self, request, *args, **kwargs):  # noqa D102
         """Provide an array with all products and their filters.
 
         Array will contain all products that have been marked as main card and
@@ -45,7 +32,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         Siblings field returns an array of objects that are marked not as main card and
         have same logic for image.
         """
-        return super().list(request)
+        return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         """Endpoint to create a new product.

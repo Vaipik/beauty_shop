@@ -28,6 +28,8 @@ class ProductOptionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Choose which queryset should be queried."""
+        if getattr(self, "swagger_fake_view", False):  # drf-yasg comp
+            return ProductOption.objects.none()
         if self.action == "list":
             return ProductOption.get_root_nodes()
         if self.action == "retrieve":

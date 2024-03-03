@@ -1,12 +1,12 @@
 import typing
 
 from django.contrib.auth import get_user_model
-from rest_framework import viewsets, permissions
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 
 from api.base.permissions import AdminPermission, OwnerPermission
 
-from .serializers import UserSerializer, UserCreateSerializer, UserProfileSerializer
+from .serializers import UserCreateSerializer, UserProfileSerializer, UserSerializer
 
 if typing.TYPE_CHECKING:
     from core.user_auth.models import User
@@ -14,6 +14,7 @@ if typing.TYPE_CHECKING:
 User: User = get_user_model()
 
 
+# noinspection PyTestUnpassedFixture
 class UserViewSiet(viewsets.ModelViewSet):
     """Basic viewset for user operations."""
 
@@ -30,10 +31,13 @@ class UserViewSiet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):  # noqa D102
+        if getattr(self, "swagger_fake_view", False):  # drf-yasg comp
+            return User.objects.none()
         if self.action == "list":
             return User.objects.all()
         if self.action == "me":
             return User.objects.prefetch_related("orders").filter(pk=self.kwargs["pk"])
+        return super().get_queryset()
 
     def get_serializer_class(self):  # noqa D102
         if self.action in {"list", "retrieve", "partial_update", "delete"}:
@@ -42,6 +46,7 @@ class UserViewSiet(viewsets.ModelViewSet):
             return UserCreateSerializer
         if self.action == "me":
             return UserProfileSerializer
+        return super().get_serializer_class()
 
     @action(["get", "patch"], detail=False)
     def me(self, request, *args, **kwargs):

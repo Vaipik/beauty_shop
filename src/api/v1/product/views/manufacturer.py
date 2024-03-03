@@ -7,10 +7,7 @@ from rest_framework.response import Response
 
 from api.base.permissions import StaffPermission
 from api.v1.product import services
-from api.v1.product.serializers import (
-    ProductListResponseSerializer,
-    ProductManufacturerSerializer,
-)
+from api.v1.product.serializers import ProductManufacturerSerializer, ProductSerializer
 from core.product.models import ProductManufacturer
 
 
@@ -30,6 +27,8 @@ class ProductManufacturerViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):  # noqa D102
+        if getattr(self, "swagger_fake_view", False):  # drf-yasg comp
+            return ProductManufacturer.objects.none()
         if self.action == "products":
             return services.get_products_by_manufacturer(self.kwargs["pk"])
         return super().get_queryset()
@@ -44,13 +43,13 @@ class ProductManufacturerViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     @extend_schema(
-        responses=ProductListResponseSerializer(many=True),
+        responses=ProductSerializer(many=True),
         description="Manufacturer products.",
     )
     @action(
         detail=True,
         methods=["get"],
-        serializer_class=ProductListResponseSerializer,
+        serializer_class=ProductSerializer,
     )
     def products(self, request, pk: UUID = None):
         """Extra route to obtain list of products related to manufacturer.."""

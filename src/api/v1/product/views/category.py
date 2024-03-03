@@ -10,8 +10,8 @@ from api.v1.product import services, swagger_examples
 from api.v1.product.filters import ProductFilter
 from api.v1.product.serializers import (
     ProductCategoryCreateResponseSeriliazer,
-    ProductListResponseSerializer,
     ProductOptionBindedSerializer,
+    ProductSerializer,
     TreeCreateUpdateSerializer,
     TreeListResponseSerializer,
 )
@@ -19,6 +19,7 @@ from api.v1.product.serializers.common import UUIDListSerializer
 from core.product.models import ProductCategory
 
 
+# noinspection PyTestUnpassedFixture
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     """Viewset for categories that are binded for products."""
 
@@ -34,6 +35,8 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Choose which queryset should be queried."""
+        if getattr(self, "swagger_fake_view", False):  # drf-yasg comp
+            return ProductCategory.objects.none()
         if self.action == "list":
             return ProductCategory.get_root_nodes()
         if self.action == "retrieve":
@@ -141,13 +144,13 @@ class ProductCategoryViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(
-        responses=ProductListResponseSerializer(many=True),
+        responses=ProductSerializer(many=True),
         parameters=swagger_examples.get_parameters(),
     )
     @action(
         detail=True,
         methods=["get"],
-        serializer_class=ProductListResponseSerializer,
+        serializer_class=ProductSerializer,
     )
     def products(self, request, *args, **kwargs):
         """Extra route to obtain list of products for a category."""
