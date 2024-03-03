@@ -1,12 +1,10 @@
-from rest_framework import viewsets, status
+from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 
-from api.v1.product.filters import ProductFilter
-from api.v1.product.serializers import (
-    ProductListResponseSerializer,
-    ProductSerializer,
-)
+from api.base.permissions import StaffPermission
 from api.v1.product import services
+from api.v1.product.filters import ProductFilter
+from api.v1.product.serializers import ProductListResponseSerializer, ProductSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -14,6 +12,14 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     http_method_names = ["get", "post", "patch", "delete"]
     filterset_class = ProductFilter
+
+    def get_permissions(self):
+        """To use a custom permissions."""
+        if self.action in {"create", "partial_update", "destroy"}:
+            permission_classes = [StaffPermission]
+        else:
+            permission_classes = [permissions.AllowAny]
+        return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):
         """Different endpoints require different serializers."""

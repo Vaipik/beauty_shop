@@ -14,7 +14,7 @@ class ProductImage(Base, TimeStampedBase):
     )
     img_order = models.PositiveSmallIntegerField(verbose_name=_("Order"), null=True)
     product = models.ForeignKey(
-        to="product.Product",
+        to="ProductItem",
         on_delete=models.CASCADE,
         related_name="images",
         null=True,

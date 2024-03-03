@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.base.models import Base
-from core.product.constants import PRODUCT_PRICE_MAX_DIGITS
+from core.product import constants as product_constants
 
 
 class OrderItem(Base):
@@ -12,8 +12,13 @@ class OrderItem(Base):
 
     price = models.DecimalField(
         verbose_name=_("Price"),
-        max_digits=PRODUCT_PRICE_MAX_DIGITS,
+        max_digits=product_constants.PRODUCT_PRICE_MAX_DIGITS,
         decimal_places=2,
+    )
+    currency = models.CharField(
+        verbose_name=_("Currency"),
+        max_length=product_constants.CURRENCY_ABBREVIATION_MAX_LENGTH,
+        default="UAH",
     )
     quantity = models.PositiveSmallIntegerField(
         verbose_name=_("Item quantity"),
@@ -26,7 +31,7 @@ class OrderItem(Base):
         null=True,
     )
     product = models.ForeignKey(
-        to="product.Product",  # app_label.ModelName
+        to="product.ProductItem",  # app_label.ModelName
         on_delete=models.SET_NULL,
         null=True,
         related_name="order_items",
