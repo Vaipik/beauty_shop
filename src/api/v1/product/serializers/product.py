@@ -12,7 +12,8 @@ class ProductItemSerializer(TimeStampedSerializer, serializers.ModelSerializer):
 
     feedbacks = FeedbackProductSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=False, allow_null=True)
-    price = ProductCurrencySerializer(many=True)
+    newPrice = ProductCurrencySerializer(many=True, source="price")
+    oldPrice = ProductCurrencySerializer(many=True, source="price", read_only=True)
 
     # @extend_schema_field(ProductOptionListSerializer(many=True))
     # def get_options(self, instance: Product):
@@ -26,7 +27,6 @@ class ProductItemSerializer(TimeStampedSerializer, serializers.ModelSerializer):
             "id",
             "description",
             "name",
-            "price",
             "rating",
             "sku",
             "categories",
@@ -35,6 +35,8 @@ class ProductItemSerializer(TimeStampedSerializer, serializers.ModelSerializer):
             "feedbacks",
             "createdAt",
             "updatedAt",
+            "oldPrice",
+            "newPrice",
         ]
         exclude_fields = ["created_at", "updated_at"]
 
